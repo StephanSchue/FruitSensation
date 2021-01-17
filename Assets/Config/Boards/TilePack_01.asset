@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3830c8913022ef468985c690fdb94bf, type: 3}
+  m_Name: TilePack_01
+  m_EditorClassIdentifier: 
+  boardTiles:
+  - {fileID: 6500961462315819301, guid: f3795381279d03942ac496ad513e647d, type: 3}
+  - {fileID: 6500961462315819301, guid: e3b25add3ddf483498a6249fe8e2ee46, type: 3}
+  - {fileID: 6500961462315819301, guid: f00596fa8f7c8024c8a8cd6413bc9f4b, type: 3}
+  - {fileID: 6500961462315819301, guid: ccbf0da118e19fc419585c62af32e07e, type: 3}
