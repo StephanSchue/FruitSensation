@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: TilePack_01
+  m_EditorClassIdentifier: 
+  m_GroupName: TilePack_01
+  m_Data:
+    m_SerializedData: []
+  m_GUID: de814b8601b8f9e478e1c1219292be8e
+  m_SerializeEntries:
+  - m_GUID: b7cb33362bb79694cb13fc0849ca4f11
+    m_Address: Assets/Prefabs/TilePack/TilePack_01
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 102900000, guid: b7cb33362bb79694cb13fc0849ca4f11, type: 3}
+    m_TargetAsset: {fileID: 102900000, guid: b7cb33362bb79694cb13fc0849ca4f11, type: 3}
+  - m_GUID: e2c68dd98e3296242a1d46a9cf32f565
+    m_Address: Assets/Config/Boards/TilePack_01.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 792c3b94bdc78d442afc713c8a3255d7, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3a2da38902d3b4e479868d37f06616aa, type: 2}
+    - {fileID: 11400000, guid: 8cda58492030df945983f33eea20e4c7, type: 2}
