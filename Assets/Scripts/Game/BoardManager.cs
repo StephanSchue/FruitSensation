@@ -23,10 +23,9 @@ namespace MAG.Game
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Space))
-            {
-                ClearBoard();
-                CreateBoard(boardProfile);
-            }
+                RecreateBoard();
+            else if(Input.GetKeyDown(KeyCode.Escape))
+                QuitGame();
         }
 
         public void CreateBoard(BoardProfile profile)
@@ -40,12 +39,19 @@ namespace MAG.Game
                 for(int y = 0; y < profile.size.y; y++)
                 {
                     BoardTile prefab = profile.tilePack.GetTile();
-                    BoardTile newTile = Instantiate(prefab, new Vector3(startPosition.x + (prefab.size.x * x), 
-                                                                        startPosition.y + (prefab.size.y * y), 0), 
-                                                                        prefab.transform.rotation, boardOrigin);
+                    Vector3 position = new Vector3(startPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * x),
+                                                    startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
+
+                    BoardTile newTile = Instantiate(prefab, position, prefab.transform.rotation, boardOrigin);
                     tiles[x, y] = newTile;
                 }
             }
+        }
+
+        public void RecreateBoard()
+        {
+            ClearBoard();
+            CreateBoard(boardProfile);
         }
 
         public void ClearBoard()
@@ -83,8 +89,8 @@ namespace MAG.Game
             {
                 for(int y = 0; y < profile.size.y; y++)
                 {
-                    Vector3 position = new Vector3(startPosition.x + (prefab.size.x * x),
-                                                    startPosition.y + (prefab.size.y * y), 0);
+                    Vector3 position = new Vector3(startPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * x),
+                                                    startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
 
                     DrawRect(position, prefab.size);
                 }
@@ -107,6 +113,20 @@ namespace MAG.Game
         }
 
         #endif
+
+        #endregion
+
+        #region Utils
+
+        public void QuitGame()
+        {
+        // save any game data here
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+             Application.Quit();
+        #endif
+        }
 
         #endregion
     }

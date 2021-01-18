@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c9242d52bf23f240aa49a4d27bcba64, type: 3}
   m_Name: BoardProfile_01
   m_EditorClassIdentifier: 
-  size: {x: 5, y: 5}
+  size: {x: 6, y: 6}
   tilePack: {fileID: 11400000, guid: e2c68dd98e3296242a1d46a9cf32f565, type: 2}
