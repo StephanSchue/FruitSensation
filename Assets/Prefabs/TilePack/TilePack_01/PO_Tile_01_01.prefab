@@ -7,6 +7,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1197265702381809190, guid: a8bf269c9859e3c438726411eb77e33c,
+        type: 3}
+      propertyPath: size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197265702381809190, guid: a8bf269c9859e3c438726411eb77e33c,
+        type: 3}
+      propertyPath: size.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4318991443015971004, guid: a8bf269c9859e3c438726411eb77e33c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -65,7 +75,7 @@ PrefabInstance:
     - target: {fileID: 8193927868535093125, guid: a8bf269c9859e3c438726411eb77e33c,
         type: 3}
       propertyPath: m_Name
-      value: PO_BoardTile
+      value: PO_Tile_01_01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a8bf269c9859e3c438726411eb77e33c, type: 3}
