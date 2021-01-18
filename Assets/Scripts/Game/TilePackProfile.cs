@@ -13,5 +13,10 @@ namespace MAG.Game
         {
             return boardTiles[Random.Range(0, boardTiles.Length)];
         }
+
+        public BoardTile[] GetTiles()
+        {
+            return boardTiles;
+        }
     }
 }
