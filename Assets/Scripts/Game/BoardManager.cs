@@ -120,11 +120,7 @@ namespace MAG.Game
         {
             tileCoordinate = new Vector2Int(-1, -1);
             Rect boardRect = new Rect(boardOrigin.position, GetWorldBoardSize());
-
-            Debug.DrawRay(boardRect.position, Vector3.up, Color.red, 5f);
-            Debug.DrawRay(boardRect.position + new Vector2(boardRect.width, 0f), Vector3.up, Color.blue, 5f);
-            Debug.DrawRay(boardRect.position + new Vector2(boardRect.height, 0f), Vector3.up, Color.green, 5f);
-            Debug.DrawRay(boardRect.position + new Vector2(boardRect.width, 0f) + new Vector2(boardRect.height, 0f), Vector3.up, Color.yellow, 5f);
+            boardRect.position -= new Vector2(0f, boardRect.height);
 
             if(boardRect.Contains(position))
             {
@@ -191,7 +187,7 @@ namespace MAG.Game
 
         public Vector2 GetWorldBoardSize()
         {
-            return new Vector2(tileSize.x * tiles.GetLength(0), -tileSize.y * tiles.GetLength(1));
+            return new Vector2(tileSize.x * tiles.GetLength(0), tileSize.y * tiles.GetLength(1));
         }
 
         #endregion

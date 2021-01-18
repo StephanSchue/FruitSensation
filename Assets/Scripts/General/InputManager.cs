@@ -144,7 +144,7 @@ namespace MAG.General
             {
                 mouseUpWorldPosition = ray.GetPoint(enter);
                 Vector3 headingWorld = mouseUpWorldPosition - mouseDownWorldPosition;
-                Debug.DrawLine(mouseDownWorldPosition, mouseUpWorldPosition, Color.yellow, 2f);
+                //Debug.DrawLine(mouseDownWorldPosition, mouseUpWorldPosition, Color.yellow, 2f);
             }
 
             areaClicked = false;
