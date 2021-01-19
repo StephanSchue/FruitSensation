@@ -23,11 +23,14 @@ namespace MAG.Game
 
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
-        public void Awake()
+        private void Awake()
+        {
+            CreateBoard(boardProfile);
+        }
+
+        private void Start()
         {
             inputManager.OnMouseDown.AddListener(ProccessInput);
-            
-            CreateBoard(boardProfile);
         }
 
         private void Update()
