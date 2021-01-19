@@ -167,6 +167,7 @@ MonoBehaviour:
   inputManager: {fileID: 1959401708}
   boardProfile: {fileID: 11400000, guid: 5a30aff3f416c0a4a99687972aff03ee, type: 2}
   boardOrigin: {fileID: 1267493052}
+  debugCoordinates: {x: -1, y: -1}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,7 +221,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 9
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
