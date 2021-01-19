@@ -21,6 +21,8 @@ namespace MAG.Game
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
 
+        public Vector2Int debugCoordinates;
+
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
         private void Awake()
@@ -154,21 +156,37 @@ namespace MAG.Game
 
             if(lastSelected.x >= 0)
             {
-                // Deselect Tile
-                tiles[lastSelected.x, lastSelected.y].Deselect();
-
                 // Swape Tile
-                if(coordinate != lastSelected)
-                    SwapeTile(coordinate, lastSelected);
+                if(lastSelected != coordinate)
+                {
+                    if(IsAdjacentNeighbour(lastSelected, coordinate))
+                    {
+                        SwapeTile(coordinate, lastSelected);
 
-                lastSelected = INVALID_COORDINATE;
+                        // Deselect Tile
+                        tiles[lastSelected.x, lastSelected.y].Deselect();
+                        lastSelected = INVALID_COORDINATE;
+                    }
+                }
+                else
+                {
+                    // Deselect Tile
+                    tiles[lastSelected.x, lastSelected.y].Deselect();
+                    lastSelected = INVALID_COORDINATE;
+                }
             }
             else
             {
                 // Select
                 tiles[coordinate.x, coordinate.y].Select();
+
+                foreach(Vector2Int adjacent in GetAdjacent(new Vector2Int(coordinate.x, coordinate.y)))
+                    tiles[coordinate.x, coordinate.y].Select();
+
                 lastSelected = coordinate;
             }
+
+            debugCoordinates = lastSelected;
 
             return true;
         }
@@ -193,11 +211,55 @@ namespace MAG.Game
             return new Vector2(tileSize.x * tiles.GetLength(0), tileSize.y * tiles.GetLength(1));
         }
 
+        private List<Vector2Int> GetAdjacent(Vector2Int coordinate)
+        {
+            List<Vector2Int> adjacentTiles = new List<Vector2Int>();
+            float xLength = boardProfile.size.x; // tiles.GetLength(0)
+            float yLength = boardProfile.size.y; // tiles.GetLength(1)
+
+            // --- Select Adjacent Tiles ---
+
+            // -- Above --
+            if(coordinate.y - 1 > -1) // Above
+                adjacentTiles.Add(new Vector2Int(coordinate.x, coordinate.y - 1));
+
+            if(coordinate.x - 1 > -1 && coordinate.y - 1 > -1) // Above/Left
+                adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y - 1));
+
+            if(coordinate.x + 1 < xLength && coordinate.y - 1 > -1) // Above/Right
+                adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y - 1));
+
+            // -- Right --
+            if(coordinate.x + 1 < xLength) // Right
+                adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y));
+
+            // -- Below --
+            if(coordinate.y + 1 < yLength) // Below
+                adjacentTiles.Add(new Vector2Int(coordinate.x, coordinate.y + 1));
+
+            if(coordinate.x + 1 < xLength && coordinate.y + 1 < yLength) // Below/Right
+                adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y + 1));
+
+            if(coordinate.x - 1 < xLength && coordinate.y + 1 < yLength) // Below/Left
+                adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y + 1));
+
+            // -- Left --
+            if(coordinate.x - 1 > -1) // Left
+                adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y));
+
+            return adjacentTiles;
+        }
+
+        private bool IsAdjacentNeighbour(Vector2Int originTile, Vector2Int newPositionTile)
+        {
+            return GetAdjacent(originTile).Contains(newPositionTile);
+        }
+
         #endregion
 
         #region Gizmos
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
 
         private void OnDrawGizmos()
         {
@@ -223,6 +285,17 @@ namespace MAG.Game
                                                     startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
 
                     DrawRect(position, prefab.size, x, y);
+
+                    if(debugCoordinates.x == x && debugCoordinates.y == y)
+                    {
+                        foreach(Vector2Int adjacentItem in GetAdjacent(new Vector2Int(x, y)))
+                        {
+                            Vector3 position2 = new Vector3(startPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * adjacentItem.x),
+                                                    startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * adjacentItem.y), 0);
+
+                            DrawRect(position2, prefab.size, adjacentItem.x, adjacentItem.y);
+                        }
+                    }
                 }
             }
         }
