@@ -295,36 +295,78 @@ namespace MAG.Game
         }
 
         private void ValidateBoard()
-        { 
+        {
             // Check for Matches
             for(int x = 0; x < tiles.GetLength(0); x++)
             {
                 for(int y = 0; y < tiles.GetLength(1); y++)
                 {
                     Vector2Int coordinate = new Vector2Int(x, y);
-                    
+
                     if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
                     {
                         // --- Draw Line ---
+                        for(int i = 1; i < matchList.Count; i++)
+                        {
+                            Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                                tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                        }
+
+                        // --- Clean Matches ---
                         for(int i = 0; i < matchList.Count; i++)
                         {
-                            //Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
-                            //    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
-
-                            tiles[matchList[i].x, matchList[i].y].SetPosition(boardExchange.position);
-                            tileGraveyard.Add(tiles[matchList[i].x, matchList[i].y]);
                             tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
+                            tileGraveyard.Add(tiles[matchList[i].x, matchList[i].y]);
+                            tiles[matchList[i].x, matchList[i].y] = null;
                         }
                     }
                 }
             }
 
-            // Clean
-            for(int x = 0; x < tiles.GetLength(0); x++)
+            // --- Shifting ---
+            if(tileGraveyard.Count > 0)
             {
-                for(int y = 0; y < tiles.GetLength(1); y++)
-                {
+                Vector3 startPosition = boardOrigin.position;
 
+                for(int x = 0; x < tiles.GetLength(0); x++)
+                {
+                    for(int y = tiles.GetLength(1)-1; y >= 0; y--)
+                    {
+                        if(tiles[x, y] == null)
+                        {
+                            bool found = false;
+
+                            for(int y2 = y; y2 >= 0; y2--)
+                            {
+                                if(tiles[x, y2] != null)
+                                {
+                                    Vector3 position = new Vector3(startPosition.x + (tileSize.x * 0.5f) + (tileSize.x * x),
+                                                    startPosition.y - (tileSize.y * 0.5f) - (tileSize.y * y), 0);
+
+                                    tiles[x, y2].SetPosition(position);
+                                    tiles[x, y] = tiles[x, y2];
+                                    tiles[x, y2] = null;
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            // Refill
+                            if(!found)
+                            {
+                                // -- Create Tileset --
+                                BoardTile[] tilesetLibrary = boardProfile.tilePack.boardTiles; // TileSet
+                                //int tileIndex = possibleBoardTiles[Random.Range(0, possibleBoardTiles.Count)];
+                                BoardTile prefab = tilesetLibrary[Random.Range(0, tilesetLibrary.Length)];
+                                Vector3 position = new Vector3(startPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * x),
+                                                                startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
+                                
+                                BoardTile newTile = Instantiate(prefab, position + new Vector3(0f, 10f), prefab.transform.rotation, boardOrigin);
+                                tiles[x, y] = newTile;
+                                tiles[x, y].SetPosition(position);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -334,6 +376,10 @@ namespace MAG.Game
             matchList = new List<Vector2Int>();
 
             BoardTile boardTile = tiles[coordinate.x, coordinate.y];
+
+            if(boardTile == null)
+                return false;
+
             List<Vector2Int> neighbours = GetAdjacent(coordinate);
             Vector2Int heading = Vector2Int.zero;
 
@@ -355,6 +401,12 @@ namespace MAG.Game
                         if(newPosition.x > -1 && newPosition.x < tiles.GetLength(0) &&
                             newPosition.y > -1 && newPosition.y < tiles.GetLength(1))
                         {
+                            if(tiles[newPosition.x, newPosition.y] == null)
+                            {
+                                neighbourFound = false;
+                                continue;
+                            }
+
                             // Found next Match
                             if(tiles[lastPosition.x, lastPosition.y].id == tiles[newPosition.x, newPosition.y].id)
                             {
@@ -445,7 +497,7 @@ namespace MAG.Game
             };
 
             Handles.DrawSolidRectangleWithOutline(verts, new Color(0.5f, 0.5f, 0.5f, 0.1f), new Color(0, 0, 0, 1));
-            //Handles.Label(pos, string.Format("{0}:{1}", row, column));
+            //Handles.Label(pos + new Vector3(-0.25f, 0.25f), string.Format("{0}:{1}", row, column));
         }
 
         #endif
