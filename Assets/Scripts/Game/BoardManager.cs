@@ -20,15 +20,19 @@ namespace MAG.Game
         [Header("Settings")]
         public BoardProfile boardProfile;
         public Transform boardOrigin;
+        public Transform boardExchange;
+        public bool diagonalOption = false;
+
+        [Header("Debug")]
         public bool debug = false;
+        public Vector2Int debugCoordinates;
 
         // --- Variables ---
         private BoardTile[,] tiles;
+        public List<BoardTile> tileGraveyard = new List<BoardTile>();
 
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
-
-        public Vector2Int debugCoordinates;
 
         // --- Properties ---
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1); 
@@ -145,6 +149,9 @@ namespace MAG.Game
                 {
                     for(int y = 0; y < tiles.GetLength(1); y++)
                     {
+                        if(tiles[x, y] == null)
+                            continue;
+
                         float newDistance = Vector3.Distance(position, tiles[x, y].Position);
 
                         if(newDistance < distance)
@@ -161,6 +168,9 @@ namespace MAG.Game
 
         public bool SelectTile(Vector2Int coordinate)
         {
+            if(tiles[coordinate.x, coordinate.y] == null)
+                return false;
+
             if(tiles[coordinate.x, coordinate.y].IsMoving)
                 return false;
 
@@ -220,17 +230,13 @@ namespace MAG.Game
             Vector3 boardTile01Pos = boardTile01.Position;
             Vector3 boardTile02Pos = boardTile02.Position;
 
-            boardTile02.SetPosition(boardTile01Pos, () => OnSwapeTileComplete(tile01));
+            boardTile02.SetPosition(boardTile01Pos);
             boardTile01.SetPosition(boardTile02Pos, () => OnSwapeTileComplete(tile02));
         }
 
         private void OnSwapeTileComplete(Vector2Int checkCoordinate)
         {
-            if(ValidateMatch(checkCoordinate, out List<Vector2Int> matchList))
-            {
-                for(int i = 0; i < matchList.Count; i++)
-                    tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
-            }
+            ValidateBoard();
         }
 
         public Vector2 GetWorldBoardSize()
@@ -247,31 +253,37 @@ namespace MAG.Game
             // --- Select Adjacent Tiles ---
 
             // -- Above --
-            if(coordinate.y - 1 > -1) // Above
+            if(coordinate.y - 1 > -1 && tiles[coordinate.x, coordinate.y - 1] != null) // Above
                 adjacentTiles.Add(new Vector2Int(coordinate.x, coordinate.y - 1));
 
-            if(coordinate.x - 1 > -1 && coordinate.y - 1 > -1) // Above/Left
-                adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y - 1));
+            if(diagonalOption)
+            {
+                if(coordinate.x - 1 > -1 && coordinate.y - 1 > -1) // Above/Left
+                    adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y - 1));
 
-            if(coordinate.x + 1 < xLength && coordinate.y - 1 > -1) // Above/Right
-                adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y - 1));
+                if(coordinate.x + 1 < xLength && coordinate.y - 1 > -1) // Above/Right
+                    adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y - 1));
+            }
 
             // -- Right --
-            if(coordinate.x + 1 < xLength) // Right
+            if(coordinate.x + 1 < xLength && tiles[coordinate.x + 1, coordinate.y] != null) // Right
                 adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y));
 
             // -- Below --
-            if(coordinate.y + 1 < yLength) // Below
+            if(coordinate.y + 1 < yLength && tiles[coordinate.x, coordinate.y + 1] != null) // Below
                 adjacentTiles.Add(new Vector2Int(coordinate.x, coordinate.y + 1));
 
-            if(coordinate.x + 1 < xLength && coordinate.y + 1 < yLength) // Below/Right
-                adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y + 1));
+            if(diagonalOption)
+            {
+                if(coordinate.x + 1 < xLength && coordinate.y + 1 < yLength) // Below/Right
+                    adjacentTiles.Add(new Vector2Int(coordinate.x + 1, coordinate.y + 1));
 
-            if(coordinate.x - 1 > -1 && coordinate.y + 1 < yLength) // Below/Left
-                adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y + 1));
+                if(coordinate.x - 1 > -1 && coordinate.y + 1 < yLength) // Below/Left
+                    adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y + 1));
+            }
 
             // -- Left --
-            if(coordinate.x - 1 > -1) // Left
+            if(coordinate.x - 1 > -1 && tiles[coordinate.x - 1, coordinate.y] != null) // Left
                 adjacentTiles.Add(new Vector2Int(coordinate.x - 1, coordinate.y));
 
             return adjacentTiles;
@@ -282,25 +294,59 @@ namespace MAG.Game
             return GetAdjacent(originTile).Contains(newPositionTile);
         }
 
+        private void ValidateBoard()
+        { 
+            // Check for Matches
+            for(int x = 0; x < tiles.GetLength(0); x++)
+            {
+                for(int y = 0; y < tiles.GetLength(1); y++)
+                {
+                    Vector2Int coordinate = new Vector2Int(x, y);
+                    
+                    if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
+                    {
+                        // --- Draw Line ---
+                        for(int i = 0; i < matchList.Count; i++)
+                        {
+                            //Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                            //    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+
+                            tiles[matchList[i].x, matchList[i].y].SetPosition(boardExchange.position);
+                            tileGraveyard.Add(tiles[matchList[i].x, matchList[i].y]);
+                            tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
+                        }
+                    }
+                }
+            }
+
+            // Clean
+            for(int x = 0; x < tiles.GetLength(0); x++)
+            {
+                for(int y = 0; y < tiles.GetLength(1); y++)
+                {
+
+                }
+            }
+        }
+
         private bool ValidateMatch(Vector2Int coordinate, out List<Vector2Int> matchList)
         {
-            int id = tiles[coordinate.x, coordinate.y].id;
             matchList = new List<Vector2Int>();
 
+            BoardTile boardTile = tiles[coordinate.x, coordinate.y];
             List<Vector2Int> neighbours = GetAdjacent(coordinate);
+            Vector2Int heading = Vector2Int.zero;
 
             foreach(Vector2Int neighbour in neighbours)
             {
-                // Neighbour is Match
-                if(tiles[neighbour.x, neighbour.y].id == id)
+                if(tiles[neighbour.x, neighbour.y].id == boardTile.id)
                 {
-                    //Check Row
-                    int count = 2;
-                    List<Vector2Int> objectList = new List<Vector2Int>() { coordinate, neighbour };
-
-                    Vector2Int lastPosition = neighbour;
-                    Vector2Int heading = neighbour - coordinate;
                     bool neighbourFound = true;
+                    heading = neighbour - coordinate;
+                    int matchCount = 2;
+                    
+                    // Forward Check
+                    Vector2Int lastPosition = neighbour;
 
                     while(neighbourFound)
                     {
@@ -309,44 +355,32 @@ namespace MAG.Game
                         if(newPosition.x > -1 && newPosition.x < tiles.GetLength(0) &&
                             newPosition.y > -1 && newPosition.y < tiles.GetLength(1))
                         {
+                            // Found next Match
                             if(tiles[lastPosition.x, lastPosition.y].id == tiles[newPosition.x, newPosition.y].id)
                             {
-                                objectList.Add(newPosition);
-                                ++count;
-
                                 lastPosition = newPosition;
-                            }
-                            else
-                            {
-                                neighbourFound = false;
+                                matchList.Add(newPosition);
+                                ++matchCount;
+                                continue;
                             }
                         }
-                        else
-                        {
-                            neighbourFound = false;
-                        }
+
+                        // Fallback if not match
+                        neighbourFound = false;
                     }
 
-                    if(count > 2)
+                    if(matchCount > 2)
                     {
-                        // --- Draw Line ---
-                        for(int i = 1; i < objectList.Count; i++)
-                        {
-                            Debug.DrawLine(tiles[objectList[i - 1].x, objectList[i - 1].y].Position,
-                                tiles[objectList[i].x, objectList[i].y].Position, Color.cyan, 5f);
-                        }
+                        if(!matchList.Contains(neighbour))
+                            matchList.Add(neighbour);
 
-                        // --- Destroy ---
-                        for(int i = 0; i < objectList.Count; i++)
-                        {
-                            if(!matchList.Contains(objectList[i]))
-                                matchList.Add(objectList[i]);
-                        }
+                        if(!matchList.Contains(coordinate))
+                            matchList.Add(coordinate);
                     }
                 }
             }
 
-            return matchList.Count > 0;
+            return matchList.Count > 2;
         }
 
         #endregion
@@ -382,9 +416,6 @@ namespace MAG.Game
 
                     if(debug)
                     {
-                        if(tiles != null && tiles.GetLength(0) > 0 && tiles.GetLength(1) > 0)
-                            ValidateMatch(new Vector2Int(x, y), out _);
-
                         // --- Debug Coordinates ---
                         if(debugCoordinates.x == x && debugCoordinates.y == y)
                         {

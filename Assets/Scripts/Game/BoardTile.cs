@@ -22,31 +22,39 @@ namespace MAG.Game
 
 		public Vector3 Position => transform.position;
 
-		public void Select()
-		{
-			selected = true;
-			overlayRenderer.color = new Color(1f, 1f, 0f, 0.5f);
-		}
+        #region Select/Deselect
 
-		public void Deselect()
-		{
-			selected = false;
-			overlayRenderer.color = new Color(0f, 0f, 0f, 0f);
-		}
-
-		public void SetPosition(Vector3 position, UnityAction callback = null)
+        public void Select()
         {
-			moveCallback = callback;
-			transform.DOMove(position, duration).OnComplete(SetPositionDone);
+            selected = true;
+            overlayRenderer.color = new Color(1f, 1f, 0f, 0.5f);
         }
 
-		private void SetPositionDone()
+        public void Deselect()
         {
-			if(moveCallback != null)
+            selected = false;
+            overlayRenderer.color = new Color(0f, 0f, 0f, 0f);
+        }
+        
+        #endregion
+
+        #region Set Position
+
+        public void SetPosition(Vector3 position, UnityAction callback = null)
+        {
+            moveCallback = callback;
+            transform.DOMove(position, duration).OnComplete(SetPositionDone);
+        }
+
+        private void SetPositionDone()
+        {
+            if(moveCallback != null)
             {
-				moveCallback.Invoke();
-				moveCallback = null;
-			}
-		}
-	}
+                moveCallback.Invoke();
+                moveCallback = null;
+            }
+        } 
+
+        #endregion
+    }
 }
