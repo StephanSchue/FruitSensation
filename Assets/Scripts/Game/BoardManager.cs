@@ -297,6 +297,8 @@ namespace MAG.Game
         private void ValidateBoard()
         {
             // Check for Matches
+            int removedTileCount = 0;
+
             for(int x = 0; x < tiles.GetLength(0); x++)
             {
                 for(int y = 0; y < tiles.GetLength(1); y++)
@@ -318,13 +320,14 @@ namespace MAG.Game
                             tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
                             tileGraveyard.Add(tiles[matchList[i].x, matchList[i].y]);
                             tiles[matchList[i].x, matchList[i].y] = null;
+                            ++removedTileCount;
                         }
                     }
                 }
             }
 
             // --- Shifting ---
-            if(tileGraveyard.Count > 0)
+            if(removedTileCount > 0)
             {
                 Vector3 startPosition = boardOrigin.position;
 
@@ -368,6 +371,9 @@ namespace MAG.Game
                         }
                     }
                 }
+
+                // --- Revalidate Board ---
+                ValidateBoard();
             }
         }
 
