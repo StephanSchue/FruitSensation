@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3276858177081780361}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.25, y: 6.25, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4318991443015971004}
   m_RootOrder: 1
@@ -207,6 +207,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc371880de32c724e821071418ca597c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 0
   size: {x: 1, y: 1}
   overlayRenderer: {fileID: 6125461053786507414}
-  selected: 0
