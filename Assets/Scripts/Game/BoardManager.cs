@@ -449,7 +449,7 @@ namespace MAG.Game
 
         private void DrawBoard(Transform origin, BoardProfile profile)
         {
-            if(profile.tilePack == null)
+            if(origin == null || profile.tilePack == null)
                 return;
 
             Vector3 startPosition = origin.position;

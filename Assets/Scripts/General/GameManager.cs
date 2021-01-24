@@ -59,6 +59,7 @@ namespace MAG.Game.Core
         private AssetReference currentGameScene;
 
         // Gameplay
+        private int selectedLevelIndex = -1;
         private MatchWinCondition winCondition;
         private MatchResult matchResult;
         private int remainingMoves = 0;
@@ -269,8 +270,9 @@ namespace MAG.Game.Core
             uiManager.RegisterButtonActionsOnPanel(new UIManager.UIPanelButtonsRegistation("MainMenu",
                 new UIManager.UIButtonRegistationAction[]
                 {
-                    new UIManager.UIButtonRegistationAction("Start", OnButtonStartClick),
-                    new UIManager.UIButtonRegistationAction("Highscore", OnButtonHighscoreClick),
+                    new UIManager.UIButtonRegistationAction("Level01", OnButtonLevel01Click),
+                    new UIManager.UIButtonRegistationAction("Level02", OnButtonLevel02Click),
+                    new UIManager.UIButtonRegistationAction("Level03", OnButtonLevel03Click),
                 }));
 
             uiManager.RegisterButtonActionsOnPanel(new UIManager.UIPanelButtonsRegistation("Game",
@@ -326,14 +328,22 @@ namespace MAG.Game.Core
         }
 
         // --- Button Actions ---
-        private void OnButtonStartClick()
+        private void OnButtonLevel01Click()
         {
+            selectedLevelIndex = 0;
             ChangeApplicationState(ApplicationState.Game);
         }
 
-        private void OnButtonHighscoreClick()
+        private void OnButtonLevel02Click()
         {
+            selectedLevelIndex = 1;
+            ChangeApplicationState(ApplicationState.Game);
+        }
 
+        private void OnButtonLevel03Click()
+        {
+            selectedLevelIndex = 2;
+            ChangeApplicationState(ApplicationState.Game);
         }
 
         #endregion
@@ -343,8 +353,7 @@ namespace MAG.Game.Core
         // --- Panel Functions ---
         private void InitializeGame()
         {
-            #warning Change direct reference to index
-            currentGameScene = gameScenes[0];
+            currentGameScene = gameScenes[selectedLevelIndex];
             resourceManager.LoadScene(currentGameScene, InitializeGameComplete);
         }
 

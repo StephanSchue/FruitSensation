@@ -308,12 +308,6 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3538276537883022438, guid: f52e650164d6347408316d121a26cc1d,
         type: 3}
-      propertyPath: boardProfile
-      value: 
-      objectReference: {fileID: 11400000, guid: 5a30aff3f416c0a4a99687972aff03ee,
-        type: 2}
-    - target: {fileID: 3538276537883022438, guid: f52e650164d6347408316d121a26cc1d,
-        type: 3}
       propertyPath: boardOrigin
       value: 
       objectReference: {fileID: 1267493052}
