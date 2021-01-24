@@ -5,6 +5,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 namespace MAG.General
 {
@@ -17,9 +18,12 @@ namespace MAG.General
         private AsyncOperationHandle<GameObject> preloaderCanvas;
         private AsyncOperationHandle<IList<Object>> preloadAsyncLoadOperations = new AsyncOperationHandle<IList<Object>>();
         private UnityAction preloadCallback;
-        
+
         // --- Operations ---
         private List<AsyncOperationHandle<IList<Object>>> asyncLoadOperations = new List<AsyncOperationHandle<IList<Object>>>();
+
+        private AsyncOperationHandle<SceneInstance> sceneLoadAsyncOperation;
+        private AsyncOperationHandle<SceneInstance> sceneUnloadAsyncOperation;
 
         // --- Events ---
         public UnityEvent onPreloadStart { get; private set; }
@@ -112,7 +116,55 @@ namespace MAG.General
         private void LoadAssetComplete(Object loadedObject)
         {
             Debug.Log("LoadObject: " + loadedObject);
-        } 
+        }
+
+        #endregion
+
+        #region Load Scene
+
+        public void LoadScene(AssetReference sceneReference, UnityAction callback)
+        {
+            sceneLoadAsyncOperation = Addressables.LoadSceneAsync(sceneReference, LoadSceneMode.Additive);
+            sceneLoadAsyncOperation.Completed += (obj) => LoadSceneComplete(obj, callback);
+        }
+
+        private void LoadSceneComplete(AsyncOperationHandle<SceneInstance> obj, UnityAction callback)
+        {
+            switch(obj.Status)
+            {
+                case AsyncOperationStatus.Succeeded:
+                    Debug.LogFormat("'{0}' - LoadSceneComplete: successfully loaded!", obj.DebugName);
+                    break;
+                case AsyncOperationStatus.Failed:
+                    Debug.LogErrorFormat("'{0}' - LoadSceneComplete: failed load!", obj.DebugName);
+                    break;
+            }
+
+            if(callback != null)
+                callback.Invoke();
+        }
+
+        public void UnloadScene(AssetReference sceneReference, UnityAction callback)
+        {
+            sceneUnloadAsyncOperation = Addressables.UnloadSceneAsync(sceneLoadAsyncOperation);
+            sceneUnloadAsyncOperation.Completed += (obj) => UnloadSceneComplete(obj, callback);
+        }
+
+        private void UnloadSceneComplete(AsyncOperationHandle<SceneInstance> obj, UnityAction callback)
+        {
+            switch(obj.Status)
+            {
+                case AsyncOperationStatus.Succeeded:
+                    Debug.LogFormat("'{0}' - UnloadSceneComplete: successfully loaded!", obj.DebugName);
+                    break;
+                case AsyncOperationStatus.Failed:
+                    Debug.LogErrorFormat("'{0}' - UnloadSceneComplete: failed load!", obj.DebugName);
+                    break;
+            }
+
+            if(callback != null)
+                callback.Invoke();
+        }
 
         #endregion
     }

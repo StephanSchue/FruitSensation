@@ -132,6 +132,8 @@ GameObject:
   - component: {fileID: 155298982}
   - component: {fileID: 155298983}
   - component: {fileID: 155298984}
+  - component: {fileID: 155298986}
+  - component: {fileID: 155298985}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -166,6 +168,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceManager: {fileID: 155298984}
+  gameScenes:
+  - m_AssetGUID: 2cda990e2423bbf4892e6590ba056729
+    m_SubObjectName: 
 --- !u!114 &155298984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,3 +185,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   preloader:
     m_LabelString: preload
+--- !u!114 &155298985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155298981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7e1da8da1ea9a34d90f904afa4d5f89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraReference: {fileID: 0}
+--- !u!114 &155298986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155298981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9e0b608d133f974c9eadddef2c94318, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardProfile: {fileID: 0}
+  boardOrigin: {fileID: 0}
+  boardExchange: {fileID: 0}
+  diagonalOption: 0
+  debug: 0
+  debugCoordinates: {x: 0, y: 0}
+  tileGraveyard: []

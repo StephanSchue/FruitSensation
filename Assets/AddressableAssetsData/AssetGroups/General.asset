@@ -18,28 +18,13 @@ MonoBehaviour:
   m_GUID: eb7371bd618310e4c9cd1b7068105f78
   m_SerializeEntries:
   - m_GUID: 833ad7dd0c54f1b40a173b2a564f3f7c
-    m_Address: Assets/Prefabs/Camera/PO_MainCamera.prefab
+    m_Address: PO_MainCamera.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - preload
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 83f58c767002fe649b3d888730dead0d
-    m_Address: Assets/Prefabs/Managment/PO_InputManager.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - preload
-    m_MainAsset: {fileID: 5289373386158988202, guid: 83f58c767002fe649b3d888730dead0d,
+    m_MainAsset: {fileID: 828641011383129361, guid: 833ad7dd0c54f1b40a173b2a564f3f7c,
       type: 3}
-    m_TargetAsset: {fileID: 5289373386158988202, guid: 83f58c767002fe649b3d888730dead0d,
-      type: 3}
-  - m_GUID: 85574f54b3b6ea848838ffe033c58e4b
-    m_Address: Assets/Prefabs/Managment/PO_BoardManager.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 5965464459295101927, guid: 85574f54b3b6ea848838ffe033c58e4b,
-      type: 3}
-    m_TargetAsset: {fileID: 5965464459295101927, guid: 85574f54b3b6ea848838ffe033c58e4b,
+    m_TargetAsset: {fileID: 828641011383129361, guid: 833ad7dd0c54f1b40a173b2a564f3f7c,
       type: 3}
   - m_GUID: 9ecc7660452a4d440b62ed0d675eeb3f
     m_Address: UI_PreloadCanvas

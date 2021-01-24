@@ -14,9 +14,6 @@ namespace MAG.Game
         #region Settings/Variables
 
         // --- References ---
-        [Header("References")]
-        public InputManager inputManager;
-
         [Header("Settings")]
         public BoardProfile boardProfile;
         public Transform boardOrigin;
@@ -38,16 +35,6 @@ namespace MAG.Game
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1); 
 
         #endregion
-
-        private void Awake()
-        {
-            CreateBoard(boardProfile);
-        }
-
-        private void Start()
-        {
-            inputManager.OnMouseDown.AddListener(ProccessInput);
-        }
        
         #region Create Board
 
@@ -117,7 +104,7 @@ namespace MAG.Game
 
         #region PorcessInput
 
-        private void ProccessInput(Vector3 mouseDownPosition)
+        public void ProccessInput(Vector3 mouseDownPosition)
         {
             if(FindTileAtPosition(mouseDownPosition, out Vector2Int coordinate))
                 SelectTile(coordinate);

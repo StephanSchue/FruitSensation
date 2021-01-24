@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace MAG.Game.Core
 {
@@ -31,12 +32,22 @@ namespace MAG.Game.Core
 
         #region Settings/Variables
 
+        // --- References ---
         public ResourceManager resourceManager;
-        private UIManager uiManager;
+        public AssetReference[] gameScenes;
 
+        // --- Variables ---
+        // References
+        private UIManager uiManager;
+        private BoardManager boardManager;
+        private InputManager inputManager;
+
+        // States
         private ApplicationState applicationState;
         private GamePhase gamePhase;
         private GamePhase lastGamePhase;
+
+        private AssetReference currentGameScene;
 
         #endregion
 
@@ -100,7 +111,10 @@ namespace MAG.Game.Core
                     ShowMenu();
                     break;
                 case ApplicationState.Game:
-                    StartGame();
+                    if(oldState == ApplicationState.MainMenu)
+                        InitializeGame();
+                    else
+                        ShowGame();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -142,16 +156,16 @@ namespace MAG.Game.Core
             switch(newPhase)
             {
                 case GamePhase.Select:
-                    StartGame();
+                    ShowGame();
                     break;
                 case GamePhase.Shift:
-                    StartGame();
+                    ShowGame();
                     break;
                 case GamePhase.Match:
-                    StartGame();
+                    ShowGame();
                     break;
                 case GamePhase.Refill:
-                    StartGame();
+                    ShowGame();
                     break;
                 case GamePhase.Pause:
                     CallPause();
@@ -211,6 +225,13 @@ namespace MAG.Game.Core
             // --- Show UI ---
             uiManager.Show(UIManager.CANVAS_FADEIN_DURATION);
 
+            // --- Initialize BoardMananger & InputManager ---
+            boardManager = GetComponent<BoardManager>();
+
+            inputManager = GetComponent<InputManager>();
+            inputManager.InitializeBoardInput(boardManager.boardOrigin);
+            inputManager.OnMouseDown.AddListener(boardManager.ProccessInput);
+
             // --- Move to MainMenu ---
             ChangeApplicationState(ApplicationState.MainMenu);
         }
@@ -252,7 +273,19 @@ namespace MAG.Game.Core
         #region Game State
 
         // --- Panel Functions ---
-        private void StartGame()
+        private void InitializeGame()
+        {
+            #warning Change direct reference to index
+            currentGameScene = gameScenes[0];
+            resourceManager.LoadScene(currentGameScene, InitializeGameComplete);
+        }
+
+        private void InitializeGameComplete()
+        {
+            ShowGame();
+        }
+
+        private void ShowGame()
         {
             uiManager.ChangeUIPanel("Game");
         }
@@ -270,7 +303,12 @@ namespace MAG.Game.Core
 
         private void EndGame()
         {
+            resourceManager.UnloadScene(currentGameScene, EndGameComplete);
+        }
 
+        private void EndGameComplete()
+        {
+            
         }
 
         // --- Button Actions ---
