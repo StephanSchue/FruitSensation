@@ -10,5 +10,7 @@ namespace MAG.General
         public BoardProfile boardProfile;
         public Transform boardOrigin;
         public Transform trashOrigin;
+
+        public MatchConditionsProfile matchConditionProfile;
     }
 }

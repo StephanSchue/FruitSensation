@@ -43,4 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e95cf914955ecd4187b63242b9f300e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardProfile: {fileID: 0}
+  boardProfile: {fileID: 11400000, guid: 5a30aff3f416c0a4a99687972aff03ee, type: 2}
+  boardOrigin: {fileID: 0}
+  trashOrigin: {fileID: 0}
+  matchConditionProfile: {fileID: 11400000, guid: 5666f1c68d6a1004b97c94cc2582d497,
+    type: 2}

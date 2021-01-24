@@ -28,6 +28,13 @@ namespace MAG.Game.Core
             GameOver
         }
 
+        public enum MatchResult
+        {
+            None,
+            Win,
+            Loose
+        }
+
         #endregion
 
         #region Settings/Variables
@@ -50,6 +57,12 @@ namespace MAG.Game.Core
         private GamePhase lastGamePhase;
 
         private AssetReference currentGameScene;
+
+        // Gameplay
+        private MatchWinCondition winCondition;
+        private MatchResult matchResult;
+        private int remainingMoves = 0;
+        private int score = 0;
 
         #endregion
 
@@ -188,7 +201,15 @@ namespace MAG.Game.Core
                     ShowGame();
                     break;
                 case GamePhase.Refill:
-                    ShowGame();
+                    if(CheckMatchConditions(out MatchResult matchResult))
+                    {
+                        this.matchResult = matchResult; 
+                        ChangeGamePhase(GamePhase.GameOver);
+                    }
+                    else
+                    {
+                        ShowGame();
+                    }
                     break;
                 case GamePhase.Pause:
                     CallPause();
@@ -198,6 +219,27 @@ namespace MAG.Game.Core
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newPhase), newPhase, null);
             }
+        }
+
+        private bool CheckMatchConditions(out MatchResult matchResult)
+        {
+            int winValue = winCondition.condition == WinCondition.Points ? score : remainingMoves;
+
+            if(sceneSettings.matchConditionProfile.ValidateWinCondition(winValue))
+            {
+                // Check Win Condition
+                matchResult = MatchResult.Win;
+                return true;
+            }
+            else if(sceneSettings.matchConditionProfile.ValidateLooseCondition(remainingMoves))
+            {
+                // Check loose Condition
+                matchResult = MatchResult.Loose;
+                return true;
+            }
+
+            matchResult = MatchResult.None;
+            return false;
         }
 
         #endregion
@@ -316,6 +358,7 @@ namespace MAG.Game.Core
                 this.sceneSettings = sceneSettings;
                 boardManager.InitializeBoard(this.sceneSettings);
                 inputManager.InitializeBoardInput(boardManager.boardOrigin);
+                winCondition = new MatchWinCondition(this.sceneSettings.matchConditionProfile.winCondtion);
 
                 StartGame();
             }
