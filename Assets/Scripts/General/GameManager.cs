@@ -243,6 +243,21 @@ namespace MAG.Game.Core
             return false;
         }
 
+        private void OnSelectTile()
+        {
+
+        }
+
+        private void OnDeselectTile()
+        {
+
+        }
+
+        private void OnSwapTile()
+        {
+
+        }
+
         #endregion
 
         #region Preload State
@@ -368,6 +383,10 @@ namespace MAG.Game.Core
                 boardManager.InitializeBoard(this.sceneSettings);
                 inputManager.InitializeBoardInput(boardManager.boardOrigin);
                 winCondition = new MatchWinCondition(this.sceneSettings.matchConditionProfile.winCondtion);
+
+                //boardManager.OnSelectTile.AddListener(OnSelectTile);
+                //boardManager.OnDeselectTile.AddListener(OnDeselectTile);
+                //boardManager.OnSwapTile.AddListener(OnSwapTile);
 
                 StartGame();
             }

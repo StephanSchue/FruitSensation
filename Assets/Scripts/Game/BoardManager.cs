@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MAG.General;
+using UnityEngine.Events;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -32,11 +33,25 @@ namespace MAG.Game
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
 
+        public UnityEvent OnSelectTile { get; private set; }
+        public UnityEvent OnDeselectTile { get; private set; }
+        public UnityEvent OnSwapTile { get; private set; }
+
         // --- Properties ---
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
         #endregion
-       
+
+        #region Init
+
+        private void Awake()
+        {
+            OnSelectTile = new UnityEvent();
+            OnDeselectTile = new UnityEvent();
+        }
+
+        #endregion
+
         #region Create Board
 
         public void InitializeBoard(SceneSettings sceneSettings)
@@ -168,11 +183,13 @@ namespace MAG.Game
 
             if(lastSelected.x >= 0)
             {
-                // Swape Tile
+                
                 if(lastSelected != coordinate)
                 {
+                    
                     if(IsAdjacentNeighbour(lastSelected, coordinate))
                     {
+                        // --- Swape Tile ---
                         SwapeTile(coordinate, lastSelected);
 
                         // Deselect Tile
@@ -182,28 +199,40 @@ namespace MAG.Game
                             tiles[adjacent.x, adjacent.y].Deselect();
                         
                         lastSelected = INVALID_COORDINATE;
+
+                        // Event
+                        if(OnSwapTile != null)
+                            OnSwapTile.Invoke();
                     }
                 }
                 else
                 {
-                    // Deselect Tile
+                    // --- Deselect Tile ---
                     tiles[lastSelected.x, lastSelected.y].Deselect();
 
                     foreach(Vector2Int adjacent in GetAdjacent(new Vector2Int(lastSelected.x, lastSelected.y)))
                         tiles[adjacent.x, adjacent.y].Deselect();
 
                     lastSelected = INVALID_COORDINATE;
+
+                    // Event
+                    if(OnDeselectTile != null)
+                        OnDeselectTile.Invoke();
                 }
             }
             else
             {
-                // Select
+                // --- Select ---
                 tiles[coordinate.x, coordinate.y].Select();
 
                 foreach(Vector2Int adjacent in GetAdjacent(new Vector2Int(coordinate.x, coordinate.y)))
                     tiles[adjacent.x, adjacent.y].Select();
 
                 lastSelected = coordinate;
+
+                // Event
+                if(OnSelectTile != null)
+                    OnSelectTile.Invoke();
             }
 
             debugCoordinates = lastSelected;
