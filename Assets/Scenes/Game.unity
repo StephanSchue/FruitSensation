@@ -198,11 +198,6 @@ PrefabInstance:
       propertyPath: boardExchange
       value: 
       objectReference: {fileID: 2061378391}
-    - target: {fileID: 83476249232230395, guid: 99110f4a2b31f184a9066a5b6c48392f,
-        type: 3}
-      propertyPath: cameraReference
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99110f4a2b31f184a9066a5b6c48392f, type: 3}
 --- !u!1 &1267493051

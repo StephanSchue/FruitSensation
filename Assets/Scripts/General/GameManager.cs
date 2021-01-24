@@ -69,12 +69,12 @@ namespace MAG.Game.Core
             GameObject[] mainCameraInstances = GameObject.FindGameObjectsWithTag("MainCamera");
 
             if(mainCameraInstances.Length > 1)
-                Destroy(mainCameraInstances[1].transform);
+                Destroy(mainCameraInstances[1]);
 
             GameObject gameCameraInstance = GameObject.FindGameObjectWithTag("GameCamera");
 
             if(gameCameraInstance != null)
-                Destroy(gameCameraInstance.transform);
+                Destroy(gameCameraInstance);
         }
 
         private void Start()
