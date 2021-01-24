@@ -48,14 +48,6 @@ namespace MAG.Game
         {
             inputManager.OnMouseDown.AddListener(ProccessInput);
         }
-
-        private void Update()
-        {
-            if(Input.GetKeyDown(KeyCode.Space))
-                RecreateBoard();
-            else if(Input.GetKeyDown(KeyCode.Escape))
-                QuitGame();
-        }
        
         #region Create Board
 
@@ -507,20 +499,6 @@ namespace MAG.Game
         }
 
         #endif
-
-        #endregion
-
-        #region Utils
-
-        public void QuitGame()
-        {
-        // save any game data here
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-             Application.Quit();
-        #endif
-        }
 
         #endregion
     }
