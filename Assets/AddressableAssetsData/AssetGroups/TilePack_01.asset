@@ -27,8 +27,8 @@ MonoBehaviour:
     m_Address: Assets/Config/Boards/TilePack_01.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 11400000, guid: e2c68dd98e3296242a1d46a9cf32f565, type: 2}
+    m_TargetAsset: {fileID: 11400000, guid: e2c68dd98e3296242a1d46a9cf32f565, type: 2}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 792c3b94bdc78d442afc713c8a3255d7, type: 2}
   m_SchemaSet:

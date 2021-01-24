@@ -10,13 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: General
+  m_Name: Preload
   m_EditorClassIdentifier: 
-  m_GroupName: General
+  m_GroupName: Preload
   m_Data:
     m_SerializedData: []
   m_GUID: eb7371bd618310e4c9cd1b7068105f78
   m_SerializeEntries:
+  - m_GUID: 7b8fbe8030318b9438e00c039aa81e1b
+    m_Address: UI_Menu.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
+    m_MainAsset: {fileID: 4916385023189165352, guid: 7b8fbe8030318b9438e00c039aa81e1b,
+      type: 3}
+    m_TargetAsset: {fileID: 4916385023189165352, guid: 7b8fbe8030318b9438e00c039aa81e1b,
+      type: 3}
   - m_GUID: 833ad7dd0c54f1b40a173b2a564f3f7c
     m_Address: PO_MainCamera.prefab
     m_ReadOnly: 0
@@ -25,6 +34,15 @@ MonoBehaviour:
     m_MainAsset: {fileID: 828641011383129361, guid: 833ad7dd0c54f1b40a173b2a564f3f7c,
       type: 3}
     m_TargetAsset: {fileID: 828641011383129361, guid: 833ad7dd0c54f1b40a173b2a564f3f7c,
+      type: 3}
+  - m_GUID: 9257058c264b8ae489b44abb42713384
+    m_Address: UI_EventSystem.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
+    m_MainAsset: {fileID: 8699780184573256709, guid: 9257058c264b8ae489b44abb42713384,
+      type: 3}
+    m_TargetAsset: {fileID: 8699780184573256709, guid: 9257058c264b8ae489b44abb42713384,
       type: 3}
   - m_GUID: 9ecc7660452a4d440b62ed0d675eeb3f
     m_Address: UI_PreloadCanvas
