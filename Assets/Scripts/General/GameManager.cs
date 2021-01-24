@@ -220,7 +220,6 @@ namespace MAG.Game.Core
         #region Menu State
 
         // --- Panel Functions ---
-
         private void ShowMenu()
         {
             uiManager.ChangeUIPanel("MainMenu");

@@ -12,26 +12,56 @@ namespace MAG.General
     {
         public AssetLabelReference preloader;
 
+        // --- Preload Variables ---
         private GameObject preloadContainer;
-        private List<AsyncOperationHandle<IList<Object>>> asyncLoadOperations = new List<AsyncOperationHandle<IList<Object>>>();
+        private AsyncOperationHandle<GameObject> preloaderCanvas;
+        private AsyncOperationHandle<IList<Object>> preloadAsyncLoadOperations = new AsyncOperationHandle<IList<Object>>();
         private UnityAction preloadCallback;
+        
+        // --- Operations ---
+        private List<AsyncOperationHandle<IList<Object>>> asyncLoadOperations = new List<AsyncOperationHandle<IList<Object>>>();
+
+        // --- Events ---
+        public UnityEvent onPreloadStart { get; private set; }
+        public UnityEvent onPreloadEnd { get; private set; }
+
+        // --- Progress ---
+        public float preloadProgress => preloadAsyncLoadOperations.PercentComplete;
+
+        #region Init
 
         private void Awake()
         {
             InitializePreload();
         }
 
+        #endregion
+
         #region Preload
 
         private void InitializePreload()
         {
             preloadContainer = new GameObject("PreloadAssets");
+            onPreloadStart = new UnityEvent();
+            onPreloadEnd = new UnityEvent();
+
+            preloaderCanvas = Addressables.InstantiateAsync("UI_PreloadCanvas");
+        }
+
+        private void DeinitializePreload()
+        {
+            Addressables.ReleaseInstance(preloaderCanvas);
         }
 
         public void LoadPreloadAssets(UnityAction callback)
         {
             Debug.Log("LoadPreloadAssets: Start");
+
+            if(onPreloadStart != null)
+                onPreloadStart.Invoke();
+
             AsyncOperationHandle<IList<Object>> preloadOperations = LoadAssets(preloader);
+            preloadAsyncLoadOperations = preloadOperations;
             asyncLoadOperations.Add(preloadOperations);
 
             preloadCallback = callback;
@@ -42,6 +72,7 @@ namespace MAG.General
         {
             Debug.Log("LoadPreloadAssets: Complete " + handle.Status.ToString());
 
+            // --- Instantiate Objects ---
             if(handle.Status == AsyncOperationStatus.Succeeded)
             {
                 foreach(var item in handle.Result)
@@ -54,8 +85,18 @@ namespace MAG.General
                 }
             }
 
+            // --- Remove Operations ---
+            asyncLoadOperations.Remove(preloadAsyncLoadOperations);
+
+            // --- Remove Preloader Canvas ---
+            DeinitializePreload();
+
+            // --- Events ---
             if(preloadCallback != null)
                 preloadCallback.Invoke();
+
+            if(onPreloadEnd != null)
+                onPreloadEnd.Invoke();
         }
 
         #endregion

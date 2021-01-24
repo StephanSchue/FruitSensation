@@ -11,7 +11,7 @@ namespace MAG.General
     public class InputManager : MonoBehaviour
     {
         public Camera cameraReference;
-        public Transform boardOrigin;
+        private Transform boardOrigin;
 
         // Mouse Controls
         private bool areaClicked = false;
@@ -37,6 +37,12 @@ namespace MAG.General
         private void Awake()
         {
             onMouseDown = new Vector3Event();
+            cameraReference = Camera.main;
+        }
+
+        public void InitializeBoardInput(Transform boardOrigin)
+        {
+            this.boardOrigin = boardOrigin;
         }
 
         private void Update()

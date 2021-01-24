@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 155298983}
   - component: {fileID: 155298984}
   m_Layer: 0
-  m_Name: Preloader
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,7 +166,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceManager: {fileID: 155298984}
-  uiManager: {fileID: 0}
 --- !u!114 &155298984
 MonoBehaviour:
   m_ObjectHideFlags: 0

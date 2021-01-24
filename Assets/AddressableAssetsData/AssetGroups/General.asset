@@ -24,6 +24,31 @@ MonoBehaviour:
     - preload
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
+  - m_GUID: 83f58c767002fe649b3d888730dead0d
+    m_Address: Assets/Prefabs/Managment/PO_InputManager.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - preload
+    m_MainAsset: {fileID: 5289373386158988202, guid: 83f58c767002fe649b3d888730dead0d,
+      type: 3}
+    m_TargetAsset: {fileID: 5289373386158988202, guid: 83f58c767002fe649b3d888730dead0d,
+      type: 3}
+  - m_GUID: 85574f54b3b6ea848838ffe033c58e4b
+    m_Address: Assets/Prefabs/Managment/PO_BoardManager.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 5965464459295101927, guid: 85574f54b3b6ea848838ffe033c58e4b,
+      type: 3}
+    m_TargetAsset: {fileID: 5965464459295101927, guid: 85574f54b3b6ea848838ffe033c58e4b,
+      type: 3}
+  - m_GUID: 9ecc7660452a4d440b62ed0d675eeb3f
+    m_Address: UI_PreloadCanvas
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 55552498249812361, guid: 9ecc7660452a4d440b62ed0d675eeb3f,
+      type: 3}
+    m_TargetAsset: {fileID: 55552498249812361, guid: 9ecc7660452a4d440b62ed0d675eeb3f,
+      type: 3}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 792c3b94bdc78d442afc713c8a3255d7, type: 2}
   m_SchemaSet:
