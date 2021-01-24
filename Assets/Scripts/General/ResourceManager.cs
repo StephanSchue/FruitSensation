@@ -32,18 +32,9 @@ namespace MAG.General
         // --- Progress ---
         public float preloadProgress => preloadAsyncLoadOperations.PercentComplete;
 
-        #region Init
-
-        private void Awake()
-        {
-            InitializePreload();
-        }
-
-        #endregion
-
         #region Preload
 
-        private void InitializePreload()
+        public void InitializePreload()
         {
             preloadContainer = new GameObject("PreloadAssets");
             onPreloadStart = new UnityEvent();
@@ -59,7 +50,7 @@ namespace MAG.General
 
         public void LoadPreloadAssets(UnityAction callback)
         {
-            Debug.Log("LoadPreloadAssets: Start");
+            //Debug.Log("LoadPreloadAssets: Start");
 
             if(onPreloadStart != null)
                 onPreloadStart.Invoke();
@@ -74,7 +65,7 @@ namespace MAG.General
 
         private void LoadPreloadAssetsComplete(AsyncOperationHandle<IList<Object>> handle)
         {
-            Debug.Log("LoadPreloadAssets: Complete " + handle.Status.ToString());
+            //Debug.Log("LoadPreloadAssets: Complete " + handle.Status.ToString());
 
             // --- Instantiate Objects ---
             if(handle.Status == AsyncOperationStatus.Succeeded)
@@ -109,13 +100,13 @@ namespace MAG.General
 
         private AsyncOperationHandle<IList<Object>> LoadAssets(AssetLabelReference assetReference)
         {
-            Debug.Log("LoadAssets: " + assetReference.labelString);
+            //Debug.Log("LoadAssets: " + assetReference.labelString);
             return Addressables.LoadAssetsAsync<Object>(assetReference, LoadAssetComplete);
         }
 
         private void LoadAssetComplete(Object loadedObject)
         {
-            Debug.Log("LoadObject: " + loadedObject);
+            //Debug.Log("LoadObject: " + loadedObject);
         }
 
         #endregion
@@ -133,10 +124,10 @@ namespace MAG.General
             switch(obj.Status)
             {
                 case AsyncOperationStatus.Succeeded:
-                    Debug.LogFormat("'{0}' - LoadSceneComplete: successfully loaded!", obj.DebugName);
+                    //Debug.LogFormat("'{0}' - LoadSceneComplete: successfully loaded!", obj.DebugName);
                     break;
                 case AsyncOperationStatus.Failed:
-                    Debug.LogErrorFormat("'{0}' - LoadSceneComplete: failed load!", obj.DebugName);
+                    //Debug.LogErrorFormat("'{0}' - LoadSceneComplete: failed load!", obj.DebugName);
                     break;
             }
 
@@ -155,10 +146,10 @@ namespace MAG.General
             switch(obj.Status)
             {
                 case AsyncOperationStatus.Succeeded:
-                    Debug.LogFormat("'{0}' - UnloadSceneComplete: successfully loaded!", obj.DebugName);
+                    //Debug.LogFormat("UnloadSceneComplete: successfully loaded!");
                     break;
                 case AsyncOperationStatus.Failed:
-                    Debug.LogErrorFormat("'{0}' - UnloadSceneComplete: failed load!", obj.DebugName);
+                    //Debug.LogErrorFormat("UnloadSceneComplete: failed load!");
                     break;
             }
 

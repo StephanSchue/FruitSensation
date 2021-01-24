@@ -16,9 +16,14 @@ namespace MAG.General.UI
 
         private void Awake()
         {
-            resourceManager = FindObjectOfType<ResourceManager>();
-            resourceManager.onPreloadStart.AddListener(Show);
-            resourceManager.onPreloadEnd.AddListener(Hide);
+            GameObject gameController = GameObject.FindGameObjectWithTag("GameController");
+
+            if(gameController != null && gameController.TryGetComponent(out ResourceManager resourceManager))
+            {
+                this.resourceManager = resourceManager;
+                this.resourceManager.onPreloadStart.AddListener(Show);
+                this.resourceManager.onPreloadEnd.AddListener(Hide);
+            }
         }
 
         private void Show()

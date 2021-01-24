@@ -33,6 +33,7 @@ namespace MAG.Game.Core
         #region Settings/Variables
 
         // --- References ---
+        public bool ingameRepresentation = false;
         public ResourceManager resourceManager;
         public AssetReference[] gameScenes;
 
@@ -41,6 +42,7 @@ namespace MAG.Game.Core
         private UIManager uiManager;
         private BoardManager boardManager;
         private InputManager inputManager;
+        private SceneSettings sceneSettings;
 
         // States
         private ApplicationState applicationState;
@@ -51,13 +53,35 @@ namespace MAG.Game.Core
 
         #endregion
 
-        // Start is called before the first frame update
+        private void Awake()
+        {
+            // --- Clean Methods for GameScene Setup ----
+
+            // GameController
+            GameObject[] gameControllerInstances = GameObject.FindGameObjectsWithTag("GameController");
+            
+            if(gameControllerInstances.Length > 1)
+                Destroy(gameObject);
+            else
+                resourceManager.InitializePreload();
+
+            // Cameras
+            GameObject[] mainCameraInstances = GameObject.FindGameObjectsWithTag("MainCamera");
+
+            if(mainCameraInstances.Length > 1)
+                Destroy(mainCameraInstances[1].transform);
+
+            GameObject gameCameraInstance = GameObject.FindGameObjectWithTag("GameCamera");
+
+            if(gameCameraInstance != null)
+                Destroy(gameCameraInstance.transform);
+        }
+
         private void Start()
         {
             StartPreload();
         }
 
-        // Update is called once per frame
         private void Update()
         {
             var dt = Time.deltaTime;
@@ -114,7 +138,7 @@ namespace MAG.Game.Core
                     if(oldState == ApplicationState.MainMenu)
                         InitializeGame();
                     else
-                        ShowGame();
+                        InitializeGameComplete();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -127,7 +151,6 @@ namespace MAG.Game.Core
 
         public void ChangeGamePhase(GamePhase newPhase)
         {
-            Debug.Log("ChangeGamePhase: " + newPhase);
             // --- Exit Old State ---
             GamePhase oldPhase = gamePhase;
 
@@ -224,18 +247,21 @@ namespace MAG.Game.Core
 
             // --- Show UI ---
             uiManager.Show(UIManager.CANVAS_FADEIN_DURATION);
-
+            
             // --- Initialize BoardMananger & InputManager ---
             boardManager = GetComponent<BoardManager>();
 
             inputManager = GetComponent<InputManager>();
-            inputManager.InitializeBoardInput(boardManager.boardOrigin);
+            inputManager.cameraReference = Camera.main;
             inputManager.OnMouseDown.AddListener(boardManager.ProccessInput);
 
             // --- Move to MainMenu ---
-            ChangeApplicationState(ApplicationState.MainMenu);
+            if(ingameRepresentation)
+                ChangeApplicationState(ApplicationState.Game);
+            else
+                ChangeApplicationState(ApplicationState.MainMenu);
         }
-
+        
         #endregion
 
         #region Menu State
@@ -282,6 +308,23 @@ namespace MAG.Game.Core
 
         private void InitializeGameComplete()
         {
+            // --- Get SceneSettings ---
+            GameObject sceneSettingsObject = GameObject.FindGameObjectWithTag("SceneSettings");
+
+            if(sceneSettingsObject != null && sceneSettingsObject.TryGetComponent(out SceneSettings sceneSettings))
+            {
+                this.sceneSettings = sceneSettings;
+                boardManager.InitializeBoard(this.sceneSettings);
+                inputManager.InitializeBoardInput(boardManager.boardOrigin);
+
+                StartGame();
+            }
+        }
+
+        private void StartGame()
+        {
+            Debug.Log("StartGame");
+            boardManager.CreateBoard();
             ShowGame();
         }
 

@@ -16,8 +16,6 @@ namespace MAG.Game
         // --- References ---
         [Header("Settings")]
         public BoardProfile boardProfile;
-        public Transform boardOrigin;
-        public Transform boardExchange;
         public bool diagonalOption = false;
 
         [Header("Debug")]
@@ -25,6 +23,9 @@ namespace MAG.Game
         public Vector2Int debugCoordinates;
 
         // --- Variables ---
+        public Transform boardOrigin { get; private set; }
+        public Transform boardExchange { get; private set; }
+
         private BoardTile[,] tiles;
         public List<BoardTile> tileGraveyard = new List<BoardTile>();
 
@@ -32,13 +33,25 @@ namespace MAG.Game
         private Vector2 tileSize = new Vector2(1f, 1f);
 
         // --- Properties ---
-        private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1); 
+        private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
         #endregion
        
         #region Create Board
 
-        public void CreateBoard(BoardProfile profile)
+        public void InitializeBoard(SceneSettings sceneSettings)
+        {
+            this.boardProfile = sceneSettings.boardProfile;
+            this.boardOrigin = sceneSettings.boardOrigin;
+            this.boardExchange = sceneSettings.trashOrigin;
+        }
+
+        public void CreateBoard()
+        {
+            CreateBoard(this.boardProfile);
+        }
+
+        private void CreateBoard(BoardProfile profile)
         {
             // --- Set Board Variables ---
             BoardTile[] tilesetLibrary = profile.tilePack.boardTiles; // TileSet

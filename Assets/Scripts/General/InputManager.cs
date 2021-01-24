@@ -7,7 +7,6 @@ using UnityEngine.Events;
 namespace MAG.General
 {
     [System.Serializable] public class Vector3Event : UnityEvent<Vector3> { }
-
     public class InputManager : MonoBehaviour
     {
         public Camera cameraReference;
@@ -25,6 +24,7 @@ namespace MAG.General
         // Touch Contros
         private int fingerID = 0;
 
+        private bool initialized = false;
         private bool inputActive = true;
 
         // --- Properties ---
@@ -37,19 +37,19 @@ namespace MAG.General
         private void Awake()
         {
             onMouseDown = new Vector3Event();
-            cameraReference = Camera.main;
         }
 
         public void InitializeBoardInput(Transform boardOrigin)
         {
             this.boardOrigin = boardOrigin;
+            initialized = true;
         }
 
         private void Update()
         {
             float dt = Time.deltaTime;
 
-            if(inputActive)
+            if(initialized && inputActive)
                 ProcessInput(dt);
         }
 
