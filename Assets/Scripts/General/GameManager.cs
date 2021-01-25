@@ -468,11 +468,11 @@ namespace MAG.Game.Core
 
         private void StartGame()
         {
+            ShowGame();
+
             Score = 0;
             RemainingMoves = totalMoves = matchConditionsProfile.moves;
             boardManager.CreateBoard();
-
-            ShowGame();
         }
 
         private void ShowGame()
