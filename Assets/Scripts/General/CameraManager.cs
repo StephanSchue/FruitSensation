@@ -29,6 +29,12 @@ namespace MAG.General
             AdjustToAspectRatio();
         }
 
+        public void Initialize(CameraSceneProfile cameraSceneProfile)
+        {
+            this.cameraSceneProfile = cameraSceneProfile;
+            AdjustToAspectRatio();
+        }
+
         public void AdjustToAspectRatio()
         {
 

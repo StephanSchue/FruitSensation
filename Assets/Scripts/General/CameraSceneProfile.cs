@@ -22,7 +22,7 @@ namespace MAG.General
         private void Reset()
         {
             bool orthographicActive = true;
-            float orthographicSize = 7f;
+            float orthographicSize = 5f;
 
             aspects = new AspectRatioElement[]
             {
