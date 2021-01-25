@@ -8,9 +8,7 @@ namespace MAG.General
     public class SceneSettings : MonoBehaviour
     {
         public BoardProfile boardProfile;
-        public Transform boardOrigin;
-        public Transform trashOrigin;
-
-        public MatchConditionsProfile matchConditionProfile;
+        public CameraSceneProfile cameraSceneProfile;
+        public Transform boardOrigin; 
     }
 }

@@ -8,7 +8,8 @@ namespace MAG.Game
     public enum WinCondition
     {
         Points,
-        Moves
+        Moves,
+        Endless
     }
 
     [System.Serializable]
@@ -27,6 +28,7 @@ namespace MAG.Game
     [CreateAssetMenu(fileName = "MatchConditionsProfile_", menuName = "Configs/MatchConditionsProfile", order = 1)]
     public class MatchConditionsProfile : ScriptableObject
     {
+        public int moves = 30;
         public MatchWinCondition winCondtion;
 
         public bool ValidateWinCondition(int value)

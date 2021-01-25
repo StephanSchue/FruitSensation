@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using DG.Tweening;
 
 namespace MAG.Game
 {
@@ -12,6 +13,7 @@ namespace MAG.Game
         public Vector2 size;
 		public SpriteRenderer overlayRenderer;
 
+        private Color baseColor;
 		private float duration = 0.25f;
 
 		private bool selected = false;
@@ -21,6 +23,11 @@ namespace MAG.Game
 		public bool IsMoving => moving;
 
 		public Vector3 Position => transform.position;
+
+        private void Awake()
+        {
+            baseColor = overlayRenderer.color;
+        }
 
         #region Select/Deselect
 
@@ -33,7 +40,7 @@ namespace MAG.Game
         public void Deselect()
         {
             selected = false;
-            overlayRenderer.color = new Color(0f, 0f, 0f, 0f);
+            overlayRenderer.color = baseColor;
         }
         
         #endregion

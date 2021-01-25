@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MAG.General;
 using UnityEngine.Events;
+using static MAG.General.EventDefinitions;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,7 +17,7 @@ namespace MAG.Game
 
         // --- References ---
         [Header("Settings")]
-        public BoardProfile boardProfile;
+        private BoardProfile boardProfile;
         public bool diagonalOption = false;
 
         [Header("Debug")]
@@ -25,10 +26,11 @@ namespace MAG.Game
 
         // --- Variables ---
         public Transform boardOrigin { get; private set; }
+        public Vector3 boardOriginPosition { get; private set; }
         public Transform boardExchange { get; private set; }
 
         private BoardTile[,] tiles;
-        public List<BoardTile> tileGraveyard = new List<BoardTile>();
+        private Vector2Int tilesDimesions = Vector2Int.zero;
 
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
@@ -36,6 +38,8 @@ namespace MAG.Game
         public UnityEvent OnSelectTile { get; private set; }
         public UnityEvent OnDeselectTile { get; private set; }
         public UnityEvent OnSwapTile { get; private set; }
+        public IntEvent OnMatch { get; private set; }
+        public UnityEvent OnRefill { get; private set; }
 
         // --- Properties ---
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
@@ -48,6 +52,9 @@ namespace MAG.Game
         {
             OnSelectTile = new UnityEvent();
             OnDeselectTile = new UnityEvent();
+            OnSwapTile = new UnityEvent();
+            OnMatch = new IntEvent();
+            OnRefill = new UnityEvent();
         }
 
         #endregion
@@ -58,7 +65,6 @@ namespace MAG.Game
         {
             this.boardProfile = sceneSettings.boardProfile;
             this.boardOrigin = sceneSettings.boardOrigin;
-            this.boardExchange = sceneSettings.trashOrigin;
         }
 
         public void CreateBoard()
@@ -74,8 +80,10 @@ namespace MAG.Game
 
             tiles = new BoardTile[profile.size.x, profile.size.y]; // board array2D
             tileSize = profile.tilePack.boardTiles[0].size;
+            tilesDimesions = new Vector2Int(profile.size.x, profile.size.y);
 
-            Vector3 startPosition = boardOrigin.position;
+            boardOriginPosition = boardOrigin.position +
+                new Vector3(-tilesDimesions.x * (tileSize.x * 0.5f), tilesDimesions.y * (tileSize.y * 0.5f), 0f);
 
             // Variables for recognition
             int[] previousLeft = new int[profile.size.y];
@@ -98,8 +106,8 @@ namespace MAG.Game
                     // -- Create Tileset --
                     int tileIndex = possibleBoardTiles[Random.Range(0, possibleBoardTiles.Count)];
                     BoardTile prefab = tilesetLibrary[tileIndex];
-                    Vector3 position = new Vector3(startPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * x),
-                                                    startPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
+                    Vector3 position = new Vector3(boardOriginPosition.x + (prefab.size.x * 0.5f) + (prefab.size.x * x),
+                                                    boardOriginPosition.y - (prefab.size.y * 0.5f) - (prefab.size.y * y), 0);
 
                     BoardTile newTile = Instantiate(prefab, position, prefab.transform.rotation, boardOrigin);
                     tiles[x, y] = newTile;
@@ -119,9 +127,9 @@ namespace MAG.Game
 
         public void ClearBoard()
         {
-            for(int x = 0; x < tiles.GetLength(0); x++)
+            for(int x = 0; x < tilesDimesions.x; x++)
             {
-                for(int y = 0; y < tiles.GetLength(1); y++)
+                for(int y = 0; y < tilesDimesions.y; y++)
                 {
                     Destroy(tiles[x, y].gameObject);
                 }
@@ -145,16 +153,16 @@ namespace MAG.Game
         public bool FindTileAtPosition(Vector3 position, out Vector2Int tileCoordinate)
         {
             tileCoordinate = new Vector2Int(-1, -1);
-            Rect boardRect = new Rect(boardOrigin.position, GetWorldBoardSize());
+            Rect boardRect = new Rect(boardOriginPosition, GetWorldBoardSize());
             boardRect.position -= new Vector2(0f, boardRect.height);
 
             if(boardRect.Contains(position))
             {
                 float distance = 100f;
 
-                for(int x = 0; x < tiles.GetLength(0); x++)
+                for(int x = 0; x < tilesDimesions.x; x++)
                 {
-                    for(int y = 0; y < tiles.GetLength(1); y++)
+                    for(int y = 0; y < tilesDimesions.y; y++)
                     {
                         if(tiles[x, y] == null)
                             continue;
@@ -262,14 +270,14 @@ namespace MAG.Game
 
         public Vector2 GetWorldBoardSize()
         {
-            return new Vector2(tileSize.x * tiles.GetLength(0), tileSize.y * tiles.GetLength(1));
+            return new Vector2(tileSize.x * tilesDimesions.x, tileSize.y * tilesDimesions.y);
         }
 
         private List<Vector2Int> GetAdjacent(Vector2Int coordinate)
         {
             List<Vector2Int> adjacentTiles = new List<Vector2Int>();
-            float xLength = boardProfile.size.x; // tiles.GetLength(0)
-            float yLength = boardProfile.size.y; // tiles.GetLength(1)
+            float xLength = boardProfile.size.x; // tilesDimesions.x
+            float yLength = boardProfile.size.y; // tilesDimesions.y
 
             // --- Select Adjacent Tiles ---
 
@@ -320,9 +328,9 @@ namespace MAG.Game
             // Check for Matches
             int removedTileCount = 0;
 
-            for(int x = 0; x < tiles.GetLength(0); x++)
+            for(int x = 0; x < tilesDimesions.x; x++)
             {
-                for(int y = 0; y < tiles.GetLength(1); y++)
+                for(int y = 0; y < tilesDimesions.y; y++)
                 {
                     Vector2Int coordinate = new Vector2Int(x, y);
 
@@ -339,22 +347,27 @@ namespace MAG.Game
                         for(int i = 0; i < matchList.Count; i++)
                         {
                             tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
-                            tileGraveyard.Add(tiles[matchList[i].x, matchList[i].y]);
+                            DG.Tweening.DOTween.Kill(tiles[matchList[i].x, matchList[i].y].transform);
+                            Destroy(tiles[matchList[i].x, matchList[i].y].gameObject);
                             tiles[matchList[i].x, matchList[i].y] = null;
                             ++removedTileCount;
                         }
+
+                        // Event
+                        if(OnMatch != null)
+                            OnMatch.Invoke(matchList.Count);
                     }
                 }
             }
 
-            // --- Shifting ---
+            // --- Shifting/Refill ---
             if(removedTileCount > 0)
             {
-                Vector3 startPosition = boardOrigin.position;
+                Vector3 startPosition = boardOriginPosition;
 
-                for(int x = 0; x < tiles.GetLength(0); x++)
+                for(int x = 0; x < tilesDimesions.x; x++)
                 {
-                    for(int y = tiles.GetLength(1)-1; y >= 0; y--)
+                    for(int y = tilesDimesions.y-1; y >= 0; y--)
                     {
                         if(tiles[x, y] == null)
                         {
@@ -393,6 +406,10 @@ namespace MAG.Game
                     }
                 }
 
+                // Event
+                if(OnRefill != null)
+                    OnRefill.Invoke();
+
                 // --- Revalidate Board ---
                 ValidateBoard();
             }
@@ -425,8 +442,8 @@ namespace MAG.Game
                     {
                         Vector2Int newPosition = lastPosition + heading;
 
-                        if(newPosition.x > -1 && newPosition.x < tiles.GetLength(0) &&
-                            newPosition.y > -1 && newPosition.y < tiles.GetLength(1))
+                        if(newPosition.x > -1 && newPosition.x < tilesDimesions.x &&
+                            newPosition.y > -1 && newPosition.y < tilesDimesions.y)
                         {
                             if(tiles[newPosition.x, newPosition.y] == null)
                             {
@@ -473,15 +490,15 @@ namespace MAG.Game
             if(boardProfile == null)
                 return;
             
-            DrawBoard(boardOrigin, boardProfile);
+            DrawBoard(boardOriginPosition, boardProfile);
         }
 
-        private void DrawBoard(Transform origin, BoardProfile profile)
+        private void DrawBoard(Vector3 originPosition, BoardProfile profile)
         {
-            if(origin == null || profile.tilePack == null)
+            if(originPosition == null || profile.tilePack == null)
                 return;
 
-            Vector3 startPosition = origin.position;
+            Vector3 startPosition = originPosition;
             BoardTile prefab = profile.tilePack.boardTiles[0];
 
             for(int x = 0; x < profile.size.x; x++)
