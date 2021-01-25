@@ -21,7 +21,7 @@ MonoBehaviour:
   - label: 9:19
     aspectRatio: 2.11
     orthographic: 1
-    orthographicSize: 7.5
+    orthographicSize: 8.25
     offset: {x: 0, y: 0, z: 0}
   - label: 10:19
     aspectRatio: 1.9
