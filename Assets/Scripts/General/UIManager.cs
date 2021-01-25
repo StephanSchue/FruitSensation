@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Events;
+using TMPro;
+using static MAG.General.EventDefinitions;
 
 namespace MAG.General
 {
@@ -12,11 +14,19 @@ namespace MAG.General
         #region Definitions
 
         [System.Serializable]
+        public struct UITextEvent
+        {
+            public string label;
+            public StringEvent onChange;
+        }
+
+        [System.Serializable]
         public struct UIPanel
         {
             public string name;
             public CanvasGroup canvasGroup;
             public UIPanelButton[] buttons;
+            public UITextEvent[] textOuput;
 
             public int buttonCount => buttons.Length;
 
@@ -68,6 +78,31 @@ namespace MAG.General
                 }
 
                 button = new UIPanelButton();
+                return false;
+            }
+
+            #endregion
+
+            #region Text Output
+
+            public void RaiseTextOutput(string label, string output)
+            {
+                if(FindTextOutput(label, out UITextEvent textOuput))
+                    textOuput.onChange.Invoke(output);
+            }
+
+            private bool FindTextOutput(string label, out UITextEvent textEvent)
+            {
+                for(int i = 0; i < textOuput.Length; i++)
+                {
+                    if(label == textOuput[i].label)
+                    {
+                        textEvent = textOuput[i];
+                        return true;
+                    }
+                }
+
+                textEvent = new UITextEvent();
                 return false;
             }
 
@@ -256,6 +291,18 @@ namespace MAG.General
             // --- Enter New State ---
             currentPanel = newState;
             ShowUIPanel(newState, PANEL_FADEIN_DURATION);
+        }
+
+        #endregion
+
+        #region Text Output
+
+        public void RaiseTextOutput(string label, string value)
+        {
+            UIPanel uiPanel = new UIPanel();
+
+            if(FindUIPanel(currentPanel, ref uiPanel))
+                uiPanel.RaiseTextOutput(label, value);
         }
 
         #endregion

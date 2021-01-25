@@ -20,11 +20,13 @@ namespace MAG.Game.Core
 
         public enum GamePhase
         {
+            View,
             Select,
             Shift,
             Match,
             Refill,
             Pause,
+            Restart,
             GameOver
         }
 
@@ -49,6 +51,7 @@ namespace MAG.Game.Core
         private UIManager uiManager;
         private BoardManager boardManager;
         private InputManager inputManager;
+        private CameraManager cameraManager;
         private SceneSettings sceneSettings;
 
         // States
@@ -60,10 +63,35 @@ namespace MAG.Game.Core
 
         // Gameplay
         private int selectedLevelIndex = -1;
+        private MatchConditionsProfile matchConditionsProfile;
         private MatchWinCondition winCondition;
         private MatchResult matchResult;
-        private int remainingMoves = 0;
-        private int score = 0;
+
+        private int totalMoves = 0;
+        private int _remainingMoves = 0;
+        private int _score = 0;
+
+        public int RemainingMoves
+        {
+            get { return _remainingMoves; }
+
+            private set
+            {
+                _remainingMoves = value;
+                OutputMoves();
+            }
+        }
+
+        public int Score
+        {
+            get { return _score; }
+
+            private set
+            {
+                _score = value;
+                OutputScore();
+            }
+        }
 
         #endregion
 
@@ -170,6 +198,8 @@ namespace MAG.Game.Core
 
             switch(oldPhase)
             {
+                case GamePhase.View:
+                    break;
                 case GamePhase.Select:
                     break;
                 case GamePhase.Shift:
@@ -180,6 +210,8 @@ namespace MAG.Game.Core
                     break;
                 case GamePhase.Pause:
                     CallUnpause();
+                    break;
+                case GamePhase.Restart:
                     break;
                 case GamePhase.GameOver:
                     break;
@@ -192,47 +224,59 @@ namespace MAG.Game.Core
 
             switch(newPhase)
             {
+                case GamePhase.View:
+                    ShowGame();
+                    break;
                 case GamePhase.Select:
                     ShowGame();
                     break;
                 case GamePhase.Shift:
-                    ShowGame();
+                    CallMatchNextStep();
                     break;
                 case GamePhase.Match:
                     ShowGame();
                     break;
                 case GamePhase.Refill:
-                    if(CheckMatchConditions(out MatchResult matchResult))
-                    {
-                        this.matchResult = matchResult; 
-                        ChangeGamePhase(GamePhase.GameOver);
-                    }
-                    else
-                    {
-                        ShowGame();
-                    }
+                    CallMatchNextStep();
                     break;
                 case GamePhase.Pause:
                     CallPause();
                     break;
+                case GamePhase.Restart:
+                    CallRestart();
+                    break;
                 case GamePhase.GameOver:
+                    //StartGameOver();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newPhase), newPhase, null);
             }
         }
 
+        private void CallMatchNextStep()
+        {
+            if(CheckMatchConditions(out MatchResult matchResult))
+            {
+                this.matchResult = matchResult;
+                ChangeGamePhase(GamePhase.GameOver);
+            }
+            else
+            {
+                ShowGame();
+            }
+        }
+
         private bool CheckMatchConditions(out MatchResult matchResult)
         {
-            int winValue = winCondition.condition == WinCondition.Points ? score : remainingMoves;
+            int winValue = winCondition.condition == WinCondition.Points ? Score : RemainingMoves;
 
-            if(sceneSettings.matchConditionProfile.ValidateWinCondition(winValue))
+            if(matchConditionsProfile.ValidateWinCondition(winValue))
             {
                 // Check Win Condition
                 matchResult = MatchResult.Win;
                 return true;
             }
-            else if(sceneSettings.matchConditionProfile.ValidateLooseCondition(remainingMoves))
+            else if(matchConditionsProfile.ValidateLooseCondition(RemainingMoves))
             {
                 // Check loose Condition
                 matchResult = MatchResult.Loose;
@@ -245,17 +289,39 @@ namespace MAG.Game.Core
 
         private void OnSelectTile()
         {
-
+            
         }
 
         private void OnDeselectTile()
         {
-
+            
         }
 
         private void OnSwapTile()
         {
+            //Debug.Log("OnSwapTile");
+            --RemainingMoves;
+        }
 
+        private void OnMatchTile(int tileCount)
+        {
+            Score += 100 * tileCount;
+
+            if(CheckMatchConditions(out MatchResult matchResult))
+            {
+                this.matchResult = matchResult;
+                ChangeGamePhase(GamePhase.GameOver);
+            }
+        }
+        
+        private void OnRefill()
+        {
+            //Debug.Log("OnRefill");
+        }
+
+        private void StartGameOver()
+        {
+            uiManager.ChangeUIPanel("GameOver");
         }
 
         #endregion
@@ -313,6 +379,8 @@ namespace MAG.Game.Core
             inputManager = GetComponent<InputManager>();
             inputManager.cameraReference = Camera.main;
             inputManager.OnMouseDown.AddListener(boardManager.ProccessInput);
+
+            cameraManager = Camera.main.GetComponent<CameraManager>();
 
             // --- Move to MainMenu ---
             if(ingameRepresentation)
@@ -380,13 +448,19 @@ namespace MAG.Game.Core
             if(sceneSettingsObject != null && sceneSettingsObject.TryGetComponent(out SceneSettings sceneSettings))
             {
                 this.sceneSettings = sceneSettings;
-                boardManager.InitializeBoard(this.sceneSettings);
-                inputManager.InitializeBoardInput(boardManager.boardOrigin);
-                winCondition = new MatchWinCondition(this.sceneSettings.matchConditionProfile.winCondtion);
 
-                //boardManager.OnSelectTile.AddListener(OnSelectTile);
-                //boardManager.OnDeselectTile.AddListener(OnDeselectTile);
-                //boardManager.OnSwapTile.AddListener(OnSwapTile);
+                boardManager.InitializeBoard(sceneSettings);
+                inputManager.InitializeBoardInput(boardManager.boardOrigin);
+                cameraManager.Initialize(sceneSettings.cameraSceneProfile);
+
+                matchConditionsProfile = sceneSettings.boardProfile.matchConditions;
+                winCondition = new MatchWinCondition(this.matchConditionsProfile.winCondtion);
+
+                boardManager.OnSelectTile.AddListener(OnSelectTile);
+                boardManager.OnDeselectTile.AddListener(OnDeselectTile);
+                boardManager.OnSwapTile.AddListener(OnSwapTile);
+                boardManager.OnMatch.AddListener(OnMatchTile);
+                boardManager.OnRefill.AddListener(OnRefill);
 
                 StartGame();
             }
@@ -394,8 +468,10 @@ namespace MAG.Game.Core
 
         private void StartGame()
         {
-            Debug.Log("StartGame");
+            Score = 0;
+            RemainingMoves = totalMoves = matchConditionsProfile.moves;
             boardManager.CreateBoard();
+
             ShowGame();
         }
 
@@ -441,12 +517,13 @@ namespace MAG.Game.Core
 
         private void OnButtonPauseMenuRestartClick()
         {
-
+            ChangeGamePhase(GamePhase.Restart);
         }
 
         private void OnButtonPauseMenuExitClick()
         {
-            ChangeApplicationState(ApplicationState.MainMenu);
+            if(!ingameRepresentation)
+                ChangeApplicationState(ApplicationState.MainMenu);
         }
 
         #endregion
@@ -461,6 +538,39 @@ namespace MAG.Game.Core
         private void CallUnpause()
         {
             
+        }
+
+        #endregion
+
+        #region Restart
+
+        private void CallRestart()
+        {
+            Score = 0;
+            RemainingMoves = totalMoves;
+
+            boardManager.RecreateBoard();
+            ChangeGamePhase(GamePhase.View);
+        }
+
+        #endregion
+
+        #region UI Events
+
+        private void OutputScore()
+        {
+            if(winCondition.condition == WinCondition.Points)
+                uiManager.RaiseTextOutput("Score", string.Format("{0}/{1}", _score, winCondition.value));
+            else
+                uiManager.RaiseTextOutput("Score", _score.ToString());
+        }
+
+        private void OutputMoves()
+        {
+            if(winCondition.condition == WinCondition.Endless)
+                uiManager.RaiseTextOutput("Moves", Mathf.Abs(_remainingMoves).ToString());
+            else
+                uiManager.RaiseTextOutput("Moves", string.Format("{0}/{1}", _remainingMoves, totalMoves));
         }
 
         #endregion
