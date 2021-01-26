@@ -494,6 +494,7 @@ namespace MAG.Game.Core
 
         private void StartGame()
         {
+            matchResult = MatchResult.None;
             ShowGame();
 
             Score = 0;
@@ -582,6 +583,7 @@ namespace MAG.Game.Core
 
         private void CallRestart()
         {
+            matchResult = MatchResult.None;
             inputManager.SetInputActive(true);
             ShowGame();
 
