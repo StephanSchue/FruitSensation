@@ -7,6 +7,9 @@ using UnityEngine.AddressableAssets;
 
 namespace MAG.Game.Core
 {
+    /// <summary>
+    /// GameManager - 
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         #region Definitions
@@ -66,6 +69,8 @@ namespace MAG.Game.Core
         private MatchConditionsProfile matchConditionsProfile;
         private MatchWinCondition winCondition;
         private MatchResult matchResult;
+
+        private bool boardManagerListenerSet = false;
 
         private int totalMoves = 0;
         private int _remainingMoves = 0;
@@ -214,6 +219,7 @@ namespace MAG.Game.Core
                 case GamePhase.Restart:
                     break;
                 case GamePhase.GameOver:
+                    CallUnpause();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(oldPhase), oldPhase, null);
@@ -229,12 +235,12 @@ namespace MAG.Game.Core
                 case GamePhase.Select:
                     break;
                 case GamePhase.Shift:
-                    CallMatchNextStep();
+                    ShowGame();
                     break;
                 case GamePhase.Match:
                     break;
                 case GamePhase.Refill:
-                    CallMatchNextStep();
+                    ShowGame();
                     break;
                 case GamePhase.Pause:
                     CallPause();
@@ -243,31 +249,16 @@ namespace MAG.Game.Core
                     CallRestart();
                     break;
                 case GamePhase.GameOver:
-                    //StartGameOver();
+                    StartGameOver();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newPhase), newPhase, null);
             }
         }
 
-        private void CallMatchNextStep()
-        {
-            if(CheckMatchConditions(out MatchResult matchResult))
-            {
-                this.matchResult = matchResult;
-                ChangeGamePhase(GamePhase.GameOver);
-            }
-            else
-            {
-                ShowGame();
-            }
-        }
-
         private bool CheckMatchConditions(out MatchResult matchResult)
         {
-            int winValue = winCondition.condition == WinCondition.Points ? Score : RemainingMoves;
-
-            if(matchConditionsProfile.ValidateWinCondition(winValue))
+            if(matchConditionsProfile.ValidateWinCondition(Score, RemainingMoves))
             {
                 // Check Win Condition
                 matchResult = MatchResult.Win;
@@ -302,15 +293,26 @@ namespace MAG.Game.Core
 
         private void OnMatchTile(int tileCount)
         {
-            Score += 100 * tileCount;
+            int diff = (tileCount - 3);
 
+            if(tileCount > 3)
+                Score += (100 * tileCount) + (diff * (diff+1) * 100);
+            else
+                Score += 100 * tileCount;
+        }
+
+        private void OnNoMatchTile()
+        {
             if(CheckMatchConditions(out MatchResult matchResult))
             {
+                if(matchResult == MatchResult.Loose)
+                    CheckMatchConditions(out matchResult);
+
                 this.matchResult = matchResult;
                 ChangeGamePhase(GamePhase.GameOver);
             }
         }
-        
+
         private void OnRefill()
         {
             //Debug.Log("OnRefill");
@@ -318,7 +320,15 @@ namespace MAG.Game.Core
 
         private void StartGameOver()
         {
-            uiManager.ChangeUIPanel("GameOver");
+            inputManager.SetInputActive(false);
+
+            if(matchResult == MatchResult.Win)
+                uiManager.ChangeUIPanel("GameOver_Win", 0f, 0.5f);
+            else
+                uiManager.ChangeUIPanel("GameOver_Loose", 0f, 0.5f);
+
+            OutputScore();
+            OutputMoves();
         }
 
         #endregion
@@ -366,6 +376,20 @@ namespace MAG.Game.Core
                     new UIManager.UIButtonRegistationAction("Restart", OnButtonPauseMenuRestartClick),
                     new UIManager.UIButtonRegistationAction("Exit", OnButtonPauseMenuExitClick),
                 }));
+        
+            uiManager.RegisterButtonActionsOnPanel(new UIManager.UIPanelButtonsRegistation("GameOver_Win",
+               new UIManager.UIButtonRegistationAction[]
+               {
+                    new UIManager.UIButtonRegistationAction("Restart", OnButtonPauseMenuRestartClick),
+                    new UIManager.UIButtonRegistationAction("Exit", OnButtonPauseMenuExitClick),
+               }));
+
+            uiManager.RegisterButtonActionsOnPanel(new UIManager.UIPanelButtonsRegistation("GameOver_Loose",
+               new UIManager.UIButtonRegistationAction[]
+               {
+                    new UIManager.UIButtonRegistationAction("Restart", OnButtonPauseMenuRestartClick),
+                    new UIManager.UIButtonRegistationAction("Exit", OnButtonPauseMenuExitClick),
+               }));
 
             // --- Show UI ---
             uiManager.Show(UIManager.CANVAS_FADEIN_DURATION);
@@ -453,12 +477,17 @@ namespace MAG.Game.Core
                 matchConditionsProfile = sceneSettings.boardProfile.matchConditions;
                 winCondition = new MatchWinCondition(this.matchConditionsProfile.winCondtion);
 
-                boardManager.OnSelectTile.AddListener(OnSelectTile);
-                boardManager.OnDeselectTile.AddListener(OnDeselectTile);
-                boardManager.OnSwapTile.AddListener(OnSwapTile);
-                boardManager.OnMatch.AddListener(OnMatchTile);
-                boardManager.OnRefill.AddListener(OnRefill);
-
+                if(!boardManagerListenerSet)
+                {
+                    boardManager.OnSelectTile.AddListener(OnSelectTile);
+                    boardManager.OnDeselectTile.AddListener(OnDeselectTile);
+                    boardManager.OnSwapTile.AddListener(OnSwapTile);
+                    boardManager.OnMatch.AddListener(OnMatchTile);
+                    boardManager.OnNoMatch.AddListener(OnNoMatchTile);
+                    boardManager.OnRefill.AddListener(OnRefill);
+                    boardManagerListenerSet = true;
+                }
+                
                 StartGame();
             }
         }
@@ -484,11 +513,15 @@ namespace MAG.Game.Core
         {
             if(Input.GetKeyDown(KeyCode.Escape))
             {
-                if(gamePhase == GamePhase.Pause)
+                if(gamePhase == GamePhase.Pause || gamePhase == GamePhase.GameOver)
                     OnButtonPauseMenuExitClick();
                 else if(gamePhase != GamePhase.Pause)
                     OnButtonPauseMenuClick();
-            }  
+            }
+            else if(Application.isEditor && Input.GetKeyDown(KeyCode.Return))
+            {
+                CallRestart();
+            }
         }
 
         private void EndGame()
@@ -549,6 +582,9 @@ namespace MAG.Game.Core
 
         private void CallRestart()
         {
+            inputManager.SetInputActive(true);
+            ShowGame();
+
             Score = 0;
             RemainingMoves = totalMoves;
 
@@ -562,18 +598,32 @@ namespace MAG.Game.Core
 
         private void OutputScore()
         {
-            if(winCondition.condition == WinCondition.Points)
-                uiManager.RaiseTextOutput("Score", string.Format("{0}/{1}", _score, winCondition.value));
+            if(winCondition.condition == WinCondition.Points && matchResult != MatchResult.Win)
+            {
+                if(_score >= winCondition.value)
+                    uiManager.RaiseTextOutput("Score", string.Format("<color=#0BC74D>{0}/{1}</color>", _score, winCondition.value));
+                else
+                    uiManager.RaiseTextOutput("Score", string.Format("{0}/{1}", _score, winCondition.value));
+            } 
             else
+            {
                 uiManager.RaiseTextOutput("Score", _score.ToString());
+            }
         }
 
         private void OutputMoves()
         {
-            if(winCondition.condition == WinCondition.Endless)
-                uiManager.RaiseTextOutput("Moves", Mathf.Abs(_remainingMoves).ToString());
+            if(matchResult != MatchResult.None)
+            {
+                uiManager.RaiseTextOutput("Moves", string.Format("{0}/{1}", (totalMoves-_remainingMoves), totalMoves));
+            }
             else
-                uiManager.RaiseTextOutput("Moves", string.Format("{0}/{1}", _remainingMoves, totalMoves));
+            {
+                if(winCondition.condition == WinCondition.Endless)
+                    uiManager.RaiseTextOutput("Moves", Mathf.Abs(_remainingMoves).ToString());
+                else
+                    uiManager.RaiseTextOutput("Moves", string.Format("{0}/{1}", _remainingMoves, totalMoves));
+            }
         }
 
         #endregion

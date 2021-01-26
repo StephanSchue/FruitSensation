@@ -282,15 +282,15 @@ namespace MAG.General
 
         #region MenuState
 
-        public void ChangeUIPanel(string newState)
+        public void ChangeUIPanel(string newState, float delayOut = 0f, float delayIn = 0f)
         {
             // --- Exit Old State ---
             string oldState = currentPanel;
-            HideUIPanel(oldState, PANEL_FADEOUT_DURATION);
+            HideUIPanel(oldState, PANEL_FADEOUT_DURATION, delayOut);
 
             // --- Enter New State ---
             currentPanel = newState;
-            ShowUIPanel(newState, PANEL_FADEIN_DURATION);
+            ShowUIPanel(newState, PANEL_FADEIN_DURATION, delayIn);
         }
 
         #endregion

@@ -11,6 +11,9 @@ using UnityEditor;
 
 namespace MAG.Game
 {
+    /// <summary>
+    /// Managed the creation, moves and validation of the board
+    /// </summary>
     public class BoardManager : MonoBehaviour
     {
         #region Settings/Variables
@@ -18,7 +21,7 @@ namespace MAG.Game
         // --- References ---
         [Header("Settings")]
         private BoardProfile boardProfile;
-        public bool diagonalOption = false;
+        private bool diagonalOption = true;
 
         [Header("Debug")]
         public bool debug = false;
@@ -39,6 +42,7 @@ namespace MAG.Game
         public UnityEvent OnDeselectTile { get; private set; }
         public UnityEvent OnSwapTile { get; private set; }
         public IntEvent OnMatch { get; private set; }
+        public UnityEvent OnNoMatch { get; private set; }
         public UnityEvent OnRefill { get; private set; }
 
         // --- Properties ---
@@ -54,6 +58,7 @@ namespace MAG.Game
             OnDeselectTile = new UnityEvent();
             OnSwapTile = new UnityEvent();
             OnMatch = new IntEvent();
+            OnNoMatch = new UnityEvent();
             OnRefill = new UnityEvent();
         }
 
@@ -72,6 +77,8 @@ namespace MAG.Game
             CreateBoard(this.boardProfile);
         }
 
+        public int[] previousLeftAbove;
+
         private void CreateBoard(BoardProfile profile)
         {
             // --- Set Board Variables ---
@@ -87,7 +94,8 @@ namespace MAG.Game
 
             // Variables for recognition
             int[] previousLeft = new int[profile.size.y];
-            int previousBelow = -1;
+            int previousAbove = -1;
+            previousLeftAbove = new int[profile.size.y];
 
             // --- Board Loop ---
             for(int x = 0; x < profile.size.x; x++)
@@ -99,8 +107,29 @@ namespace MAG.Game
 
                     for(int i = 0; i < tilesetLength; i++)
                     {
-                        if(i != previousBelow && i != previousLeft[y])
-                            possibleBoardTiles.Add(i);
+                        if(i != previousAbove && i != previousLeft[y])
+                        {
+                            if(diagonalOption && x > 0 && y > 0)
+                            {
+                                bool digAbove = tiles[x - 1, y - 1].id != tilesetLibrary[i].id;
+
+                                if(y < tilesDimesions.y-1)
+                                {
+                                    bool digBelow = tiles[x - 1, y + 1].id != tilesetLibrary[i].id;
+
+                                    if(digAbove && digBelow)
+                                        possibleBoardTiles.Add(i);
+                                }
+                                else if(digAbove)
+                                {
+                                    possibleBoardTiles.Add(i);
+                                }
+                            }
+                            else
+                            {
+                                possibleBoardTiles.Add(i);
+                            }
+                        }
                     }
 
                     // -- Create Tileset --
@@ -114,7 +143,11 @@ namespace MAG.Game
 
                     // -- Remember last Tile --
                     previousLeft[y] = tileIndex;
-                    previousBelow = tileIndex;
+
+                    if(y > 0)
+                        previousLeftAbove[y-1] = tileIndex;
+
+                    previousAbove = tileIndex;
                 }
             }
         }
@@ -413,6 +446,11 @@ namespace MAG.Game
                 // --- Revalidate Board ---
                 ValidateBoard();
             }
+            else
+            {
+                if(OnNoMatch != null)
+                    OnNoMatch.Invoke();
+            }
         }
 
         private bool ValidateMatch(Vector2Int coordinate, out List<Vector2Int> matchList)
@@ -429,6 +467,9 @@ namespace MAG.Game
 
             foreach(Vector2Int neighbour in neighbours)
             {
+                if(tiles[neighbour.x, neighbour.y] == null)
+                    continue;
+
                 if(tiles[neighbour.x, neighbour.y].id == boardTile.id)
                 {
                     bool neighbourFound = true;

@@ -8,7 +8,6 @@ namespace MAG.Game
     public enum WinCondition
     {
         Points,
-        Moves,
         Endless
     }
 
@@ -31,14 +30,14 @@ namespace MAG.Game
         public int moves = 30;
         public MatchWinCondition winCondtion;
 
-        public bool ValidateWinCondition(int value)
+        public bool ValidateWinCondition(int score, int remainingMoves)
         {
             switch(winCondtion.condition)
             {
                 case WinCondition.Points:
-                    return (winCondtion.value >= value);
-                case WinCondition.Moves:
-                    return (winCondtion.value == value);
+                    return remainingMoves == 0 && score >= winCondtion.value;
+                case WinCondition.Endless:
+                    return false;
             }
 
             return false;
@@ -50,8 +49,6 @@ namespace MAG.Game
             {
                 case WinCondition.Points:
                     return (remainingMoves == 0);
-                case WinCondition.Moves:
-                    return (remainingMoves < winCondtion.value);
             }
 
             return false;
