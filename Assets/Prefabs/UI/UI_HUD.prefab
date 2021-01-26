@@ -841,6 +841,26 @@ PrefabInstance:
       propertyPath: m_Colors.m_HighlightedColor.b
       value: 0.55193126
       objectReference: {fileID: 0}
+    - target: {fileID: 1573024137151035490, guid: 68d8150fc144a4246b29aaf508a766d7,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573024137151035490, guid: 68d8150fc144a4246b29aaf508a766d7,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573024137151035490, guid: 68d8150fc144a4246b29aaf508a766d7,
+        type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573024137151035490, guid: 68d8150fc144a4246b29aaf508a766d7,
+        type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1946699286557366564, guid: 68d8150fc144a4246b29aaf508a766d7,
         type: 3}
       propertyPath: m_AnchorMin.y

@@ -38,10 +38,10 @@ namespace MAG.General
                 canvasGroup.alpha = 1f;
             }
 
-            public void Show(float duration)
+            public void Show(float duration, float delay = 0f)
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
-                canvasGroup.DOFade(1f, duration);
+                canvasGroup.DOFade(1f, duration).SetDelay(delay);
             }
 
             public void Hide()
@@ -50,10 +50,10 @@ namespace MAG.General
                 canvasGroup.alpha = 0f;
             }
 
-            public void Hide(float duration)
+            public void Hide(float duration, float delay = 0f)
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = false;
-                canvasGroup.DOFade(0f, duration);
+                canvasGroup.DOFade(0f, duration).SetDelay(delay);
             }
 
             #endregion
@@ -223,12 +223,12 @@ namespace MAG.General
                 panel.Show();
         }
         
-        private void ShowUIPanel(string panelLabel, float duration)
+        private void ShowUIPanel(string panelLabel, float duration, float delay = 0f)
         {
             UIPanel panel = new UIPanel();
 
             if(FindUIPanel(panelLabel, ref panel))
-                panel.Show(duration);
+                panel.Show(duration, delay);
         }
 
         // --- Hide ---
@@ -240,12 +240,12 @@ namespace MAG.General
                 panel.Hide();
         }
         
-        private void HideUIPanel(string panelLabel, float duration)
+        private void HideUIPanel(string panelLabel, float duration, float delay = 0f)
         {
             UIPanel panel = new UIPanel();
 
             if(FindUIPanel(panelLabel, ref panel))
-                panel.Hide(duration);
+                panel.Hide(duration, delay);
         }
 
         // --- Utils ---

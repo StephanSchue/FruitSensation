@@ -225,16 +225,13 @@ namespace MAG.Game.Core
             switch(newPhase)
             {
                 case GamePhase.View:
-                    ShowGame();
                     break;
                 case GamePhase.Select:
-                    ShowGame();
                     break;
                 case GamePhase.Shift:
                     CallMatchNextStep();
                     break;
                 case GamePhase.Match:
-                    ShowGame();
                     break;
                 case GamePhase.Refill:
                     CallMatchNextStep();
@@ -472,7 +469,10 @@ namespace MAG.Game.Core
 
             Score = 0;
             RemainingMoves = totalMoves = matchConditionsProfile.moves;
+
             boardManager.CreateBoard();
+
+            inputManager.SetInputActive(true);
         }
 
         private void ShowGame()
@@ -485,7 +485,7 @@ namespace MAG.Game.Core
             if(Input.GetKeyDown(KeyCode.Escape))
             {
                 if(gamePhase == GamePhase.Pause)
-                    OnButtonPauseMenuResumeClick();
+                    OnButtonPauseMenuExitClick();
                 else if(gamePhase != GamePhase.Pause)
                     OnButtonPauseMenuClick();
             }  
@@ -493,6 +493,7 @@ namespace MAG.Game.Core
 
         private void EndGame()
         {
+            Score = RemainingMoves = 0;
             resourceManager.UnloadScene(currentGameScene, EndGameComplete);
         }
 
@@ -533,11 +534,13 @@ namespace MAG.Game.Core
         public void CallPause()
         {
             uiManager.ChangeUIPanel("Pause");
+            inputManager.SetInputActive(false);
         }
 
         private void CallUnpause()
         {
-            
+            inputManager.SetInputActive(true);
+            ShowGame();
         }
 
         #endregion

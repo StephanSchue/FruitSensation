@@ -155,5 +155,10 @@ namespace MAG.General
 
             areaClicked = false;
         }
+    
+        public void SetInputActive(bool active)
+        {
+            inputActive = active;
+        }
     }
 }
