@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 305aa4e94ee216044addd567106fc5a6, type: 3}
-  m_Name: MatchConditionsProfile_01
+  m_Name: MatchConditionsProfile_03
   m_EditorClassIdentifier: 
-  moves: 0
+  moves: 30
   winCondtion:
-    condition: 2
-    value: 1000
+    condition: 0
+    value: 5500
