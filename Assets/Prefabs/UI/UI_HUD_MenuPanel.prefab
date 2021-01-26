@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 6423291661513345661}
   - component: {fileID: 7736557098968594429}
   - component: {fileID: 4132402862399287865}
-  - component: {fileID: 1091367778379736491}
+  - component: {fileID: 9081488521313116808}
   m_Layer: 5
   m_Name: BackgroundTexture
   m_TagString: Untagged
@@ -332,7 +332,7 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!95 &1091367778379736491
+--- !u!95 &9081488521313116808
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0

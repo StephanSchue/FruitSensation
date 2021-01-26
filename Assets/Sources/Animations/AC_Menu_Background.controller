@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: A_Menu_Background
+  m_Name: AC_Menu_Background
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
