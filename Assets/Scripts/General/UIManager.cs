@@ -293,7 +293,10 @@ namespace MAG.General
 
         public void ChangeUIPanel(string newState, float delayOut = 0f, float delayIn = 0f)
         {
-            Debug.Log($"ChangeUIPanel: {currentPanel} -> {newState}");
+            //Debug.Log($"ChangeUIPanel: {currentPanel} -> {newState}");
+
+            if(currentPanel == newState)
+                return;
 
             // --- Exit Old State ---
             string oldState = currentPanel;

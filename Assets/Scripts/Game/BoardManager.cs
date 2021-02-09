@@ -20,24 +20,24 @@ namespace MAG.Game
 
         // --- References ---
         [Header("Settings")]
-        private BoardProfile boardProfile;
-        private bool diagonalOption = true;
+        public bool diagonalOption = true;
+        public bool expicitMatchs = true;
 
         [Header("Debug")]
         public bool debug = false;
         public Vector2Int debugCoordinates;
 
         // --- Variables ---
-        public Transform boardOrigin { get; private set; }
-        public Vector3 boardOriginPosition { get; private set; }
-        public Transform boardExchange { get; private set; }
+        private BoardProfile boardProfile;
 
         private BoardTile[,] tiles;
         private Vector2Int tilesDimesions = Vector2Int.zero;
+        private int[] previousLeftAbove;
 
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
 
+        // --- Events ---
         public UnityEvent OnSelectTile { get; private set; }
         public UnityEvent OnDeselectTile { get; private set; }
         public UnityEvent OnSwapTile { get; private set; }
@@ -46,6 +46,10 @@ namespace MAG.Game
         public UnityEvent OnRefill { get; private set; }
 
         // --- Properties ---
+        public Transform boardOrigin { get; private set; }
+        public Vector3 boardOriginPosition { get; private set; }
+        public Transform boardExchange { get; private set; }
+
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
         #endregion
@@ -76,8 +80,6 @@ namespace MAG.Game
         {
             CreateBoard(this.boardProfile);
         }
-
-        public int[] previousLeftAbove;
 
         private void CreateBoard(BoardProfile profile)
         {
@@ -183,7 +185,7 @@ namespace MAG.Game
 
         #region Find Tile
 
-        public bool FindTileAtPosition(Vector3 position, out Vector2Int tileCoordinate)
+        private bool FindTileAtPosition(Vector3 position, out Vector2Int tileCoordinate)
         {
             tileCoordinate = new Vector2Int(-1, -1);
             Rect boardRect = new Rect(boardOriginPosition, GetWorldBoardSize());
@@ -214,7 +216,7 @@ namespace MAG.Game
             return tileCoordinate.x >= 0;
         }
 
-        public bool SelectTile(Vector2Int coordinate)
+        private bool SelectTile(Vector2Int coordinate)
         {
             if(tiles[coordinate.x, coordinate.y] == null)
                 return false;
@@ -224,13 +226,12 @@ namespace MAG.Game
 
             if(lastSelected.x >= 0)
             {
-                
                 if(lastSelected != coordinate)
                 {
-                    
-                    if(IsAdjacentNeighbour(lastSelected, coordinate))
+                    // --- If destinaton is selected ---
+                    if(IsAdjacentNeighbour(lastSelected, coordinate) && (!expicitMatchs || IsCreatingMatch(coordinate, lastSelected)))
                     {
-                        // --- Swape Tile ---
+                        // -- Swape Tile --
                         SwapeTile(coordinate, lastSelected);
 
                         // Deselect Tile
@@ -263,7 +264,7 @@ namespace MAG.Game
             }
             else
             {
-                // --- Select ---
+                // --- Select Tile ---
                 tiles[coordinate.x, coordinate.y].Select();
 
                 foreach(Vector2Int adjacent in GetAdjacent(new Vector2Int(coordinate.x, coordinate.y)))
@@ -281,7 +282,9 @@ namespace MAG.Game
             return true;
         }
 
-        public void SwapeTile(Vector2Int tile01, Vector2Int tile02)
+        // --- Swape Tile ---
+
+        private void SwapeTile(Vector2Int tile01, Vector2Int tile02)
         {
             BoardTile boardTile01 = tiles[tile01.x, tile01.y];
             BoardTile boardTile02 = tiles[tile02.x, tile02.y];
@@ -301,10 +304,15 @@ namespace MAG.Game
             ValidateBoard();
         }
 
-        public Vector2 GetWorldBoardSize()
+        private bool IsCreatingMatch(Vector2Int destinationTile, Vector2Int selectedTile)
         {
-            return new Vector2(tileSize.x * tilesDimesions.x, tileSize.y * tilesDimesions.y);
+            BoardTile boardTileDestination = tiles[destinationTile.x, destinationTile.y];
+            BoardTile boardTileSelected = tiles[selectedTile.x, selectedTile.y];
+
+            return CheckForMatch(destinationTile, boardTileSelected, out _) || CheckForMatch(selectedTile, boardTileDestination, out _);
         }
+
+        // --- Neighbour Checks ---
 
         private List<Vector2Int> GetAdjacent(Vector2Int coordinate)
         {
@@ -355,6 +363,8 @@ namespace MAG.Game
         {
             return GetAdjacent(originTile).Contains(newPositionTile);
         }
+
+        // --- Validate Board ---
 
         private void ValidateBoard()
         {
@@ -455,13 +465,19 @@ namespace MAG.Game
 
         private bool ValidateMatch(Vector2Int coordinate, out List<Vector2Int> matchList)
         {
-            matchList = new List<Vector2Int>();
+            matchList = null;
 
             BoardTile boardTile = tiles[coordinate.x, coordinate.y];
 
             if(boardTile == null)
                 return false;
 
+            return CheckForMatch(coordinate, boardTile, out matchList);
+        }
+
+        private bool CheckForMatch(Vector2Int coordinate, BoardTile boardTile, out List<Vector2Int> matchList)
+        {
+            matchList = new List<Vector2Int>();
             List<Vector2Int> neighbours = GetAdjacent(coordinate);
             Vector2Int heading = Vector2Int.zero;
 
@@ -475,7 +491,7 @@ namespace MAG.Game
                     bool neighbourFound = true;
                     heading = neighbour - coordinate;
                     int matchCount = 2;
-                    
+
                     // Forward Check
                     Vector2Int lastPosition = neighbour;
 
@@ -519,6 +535,9 @@ namespace MAG.Game
 
             return matchList.Count > 2;
         }
+
+        // --- Utils ---
+        public Vector2 GetWorldBoardSize() => new Vector2(tileSize.x * tilesDimesions.x, tileSize.y * tilesDimesions.y);
 
         #endregion
 
