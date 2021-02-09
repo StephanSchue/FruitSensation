@@ -81,11 +81,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e0b608d133f974c9eadddef2c94318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardProfile: {fileID: 0}
-  diagonalOption: 0
+  diagonalOption: 1
+  expicitMatchs: 1
   debug: 0
   debugCoordinates: {x: 0, y: 0}
-  tileGraveyard: []
 --- !u!114 &83476249232230395
 MonoBehaviour:
   m_ObjectHideFlags: 0

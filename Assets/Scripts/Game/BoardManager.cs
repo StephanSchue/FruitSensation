@@ -52,6 +52,9 @@ namespace MAG.Game
 
         private static Vector2Int INVALID_COORDINATE = new Vector2Int(-1, -1);
 
+        private Vector2Int[] lastSwapePair = new Vector2Int[2];
+        private bool lastSwaped = false;
+
         #endregion
 
         #region Init
@@ -218,6 +221,8 @@ namespace MAG.Game
 
         private bool SelectTile(Vector2Int coordinate)
         {
+            lastSwaped = false; 
+
             if(tiles[coordinate.x, coordinate.y] == null)
                 return false;
 
@@ -229,10 +234,12 @@ namespace MAG.Game
                 if(lastSelected != coordinate)
                 {
                     // --- If destinaton is selected ---
-                    if(IsAdjacentNeighbour(lastSelected, coordinate) && (!expicitMatchs || IsCreatingMatch(coordinate, lastSelected)))
+                    if(IsAdjacentNeighbour(lastSelected, coordinate))
                     {
                         // -- Swape Tile --
                         SwapeTile(coordinate, lastSelected);
+                        lastSwapePair = new Vector2Int[] { coordinate, lastSelected };
+                        lastSwaped = true;
 
                         // Deselect Tile
                         tiles[lastSelected.x, lastSelected.y].Deselect();
@@ -294,22 +301,24 @@ namespace MAG.Game
 
             Vector3 boardTile01Pos = boardTile01.Position;
             Vector3 boardTile02Pos = boardTile02.Position;
-
+            
             boardTile02.SetPosition(boardTile01Pos);
             boardTile01.SetPosition(boardTile02Pos, () => OnSwapeTileComplete(tile02));
         }
 
         private void OnSwapeTileComplete(Vector2Int checkCoordinate)
         {
-            ValidateBoard();
-        }
+            if(ValidateBoardSimulation() > 0)
+            {
+                ValidateBoard();
+            }
+            else if(lastSwaped)
+            {
+                lastSwaped = false;
 
-        private bool IsCreatingMatch(Vector2Int destinationTile, Vector2Int selectedTile)
-        {
-            BoardTile boardTileDestination = tiles[destinationTile.x, destinationTile.y];
-            BoardTile boardTileSelected = tiles[selectedTile.x, selectedTile.y];
-
-            return CheckForMatch(destinationTile, boardTileSelected, out _) || CheckForMatch(selectedTile, boardTileDestination, out _);
+                if(expicitMatchs)
+                    SwapeTile(lastSwapePair[0], lastSwapePair[1]); // Swape Back
+            }
         }
 
         // --- Neighbour Checks ---
@@ -380,12 +389,17 @@ namespace MAG.Game
                     if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
                     {
                         // --- Draw Line ---
-                        for(int i = 1; i < matchList.Count; i++)
+                        #if UNITY_EDITOR
+                        if(debug)
                         {
-                            Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
-                                tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                            for(int i = 1; i < matchList.Count; i++)
+                            {
+                                Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                                    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                            }
                         }
-
+                        #endif
+                        
                         // --- Clean Matches ---
                         for(int i = 0; i < matchList.Count; i++)
                         {
@@ -461,6 +475,40 @@ namespace MAG.Game
                 if(OnNoMatch != null)
                     OnNoMatch.Invoke();
             }
+        }
+
+        private int ValidateBoardSimulation()
+        {
+            int removedTileCount = 0;
+
+            for(int x = 0; x < tilesDimesions.x; x++)
+            {
+                for(int y = 0; y < tilesDimesions.y; y++)
+                {
+                    Vector2Int coordinate = new Vector2Int(x, y);
+
+                    if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
+                    {
+                        // --- Draw Line ---
+                        #if UNITY_EDITOR
+                        if(debug)
+                        {
+                            for(int i = 1; i < matchList.Count; i++)
+                            {
+                                Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                                    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                            }
+                        }
+                        #endif
+                        
+                        // --- Clean Matches ---
+                        for(int i = 0; i < matchList.Count; i++)
+                            ++removedTileCount;
+                    }
+                }
+            }
+            
+            return removedTileCount;
         }
 
         private bool ValidateMatch(Vector2Int coordinate, out List<Vector2Int> matchList)
