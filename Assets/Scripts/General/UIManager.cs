@@ -24,6 +24,7 @@ namespace MAG.General
         public struct UIPanel
         {
             public string name;
+            public Canvas canvas;
             public CanvasGroup canvasGroup;
             public UIPanelButton[] buttons;
             public UITextEvent[] textOuput;
@@ -36,24 +37,32 @@ namespace MAG.General
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
                 canvasGroup.alpha = 1f;
+                canvas.enabled = true;
             }
 
             public void Show(float duration, float delay = 0f)
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
                 canvasGroup.DOFade(1f, duration).SetDelay(delay);
+                canvas.enabled = true;
             }
 
             public void Hide()
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = false;
-                canvasGroup.alpha = 0f;
+                canvasGroup.alpha = 0f; 
+                canvas.enabled = false;
             }
 
             public void Hide(float duration, float delay = 0f)
             {
                 canvasGroup.interactable = canvasGroup.blocksRaycasts = false;
-                canvasGroup.DOFade(0f, duration).SetDelay(delay);
+                canvasGroup.DOFade(0f, duration).SetDelay(delay).OnComplete(HideComplete);
+            }
+
+            private void HideComplete()
+            {
+                canvas.enabled = false;
             }
 
             #endregion
@@ -284,10 +293,19 @@ namespace MAG.General
 
         public void ChangeUIPanel(string newState, float delayOut = 0f, float delayIn = 0f)
         {
+            Debug.Log($"ChangeUIPanel: {currentPanel} -> {newState}");
+
             // --- Exit Old State ---
             string oldState = currentPanel;
             HideUIPanel(oldState, PANEL_FADEOUT_DURATION, delayOut);
 
+            // --- Enter New State ---
+            currentPanel = newState;
+            ShowUIPanel(newState, PANEL_FADEIN_DURATION, delayIn);
+        }
+
+        public void AddUIPanel(string newState, float delayIn = 0f)
+        {
             // --- Enter New State ---
             currentPanel = newState;
             ShowUIPanel(newState, PANEL_FADEIN_DURATION, delayIn);

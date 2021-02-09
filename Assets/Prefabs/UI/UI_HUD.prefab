@@ -120,6 +120,7 @@ MonoBehaviour:
   hudcanvasGroup: {fileID: 8234847860139621028}
   uiPanels:
   - name: MainMenu
+    canvas: {fileID: 4808545138076276790}
     canvasGroup: {fileID: 7097567096442038169}
     buttons:
     - name: Level01
@@ -130,6 +131,7 @@ MonoBehaviour:
       button: {fileID: 3248628122329458025}
     textOuput: []
   - name: Game
+    canvas: {fileID: 5554228401478116247}
     canvasGroup: {fileID: 4916385022624489619}
     buttons:
     - name: Menu
@@ -165,7 +167,23 @@ MonoBehaviour:
               m_StringArgument: 
               m_BoolArgument: 0
             m_CallState: 2
+    - label: ScoreIncrease
+      onChange:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 559867645089752251}
+            m_MethodName: UpdateText
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
   - name: Pause
+    canvas: {fileID: 145011297397683578}
     canvasGroup: {fileID: 5329671557010850816}
     buttons:
     - name: Resume
@@ -176,6 +194,7 @@ MonoBehaviour:
       button: {fileID: 3973887000596966135}
     textOuput: []
   - name: GameOver_Win
+    canvas: {fileID: 9156671877309452167}
     canvasGroup: {fileID: 1647382824425893042}
     buttons:
     - name: Restart
@@ -214,6 +233,7 @@ MonoBehaviour:
               m_BoolArgument: 0
             m_CallState: 2
   - name: GameOver_Loose
+    canvas: {fileID: 6445651487184317252}
     canvasGroup: {fileID: 3511726465135413361}
     buttons:
     - name: Restart
@@ -588,6 +608,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &559867645089752251 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3629122958799928021, guid: 44ba9cc5da277014db3cb64085437b52,
+    type: 3}
+  m_PrefabInstance: {fileID: 3861890222869765742}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a822d3652da694e42b57a8d12105bed1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4916385022624489618 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8188303417129680636, guid: 44ba9cc5da277014db3cb64085437b52,
@@ -597,6 +629,12 @@ RectTransform:
 --- !u!225 &4916385022624489619 stripped
 CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 8188303417129680637, guid: 44ba9cc5da277014db3cb64085437b52,
+    type: 3}
+  m_PrefabInstance: {fileID: 3861890222869765742}
+  m_PrefabAsset: {fileID: 0}
+--- !u!223 &5554228401478116247 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 8686500300100075001, guid: 44ba9cc5da277014db3cb64085437b52,
     type: 3}
   m_PrefabInstance: {fileID: 3861890222869765742}
   m_PrefabAsset: {fileID: 0}
@@ -625,6 +663,11 @@ PrefabInstance:
     - target: {fileID: 3545580040297884868, guid: d69f4c041b04cf64a80984057b49e352,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4203918497627869063, guid: d69f4c041b04cf64a80984057b49e352,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4960059894224247334, guid: d69f4c041b04cf64a80984057b49e352,
@@ -834,6 +877,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d69f4c041b04cf64a80984057b49e352, type: 3}
+--- !u!223 &145011297397683578 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 4203918497627869063, guid: d69f4c041b04cf64a80984057b49e352,
+    type: 3}
+  m_PrefabInstance: {fileID: 4059008355971316477}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3617554062420047134 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 747699624421248995, guid: d69f4c041b04cf64a80984057b49e352,
@@ -963,6 +1012,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 12.999908
+      objectReference: {fileID: 0}
+    - target: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4486713942212894173, guid: fd766c3965af34a4a9740d56f2aa0ff1,
         type: 3}
@@ -1133,6 +1192,12 @@ CanvasGroup:
     type: 3}
   m_PrefabInstance: {fileID: 5187702168329186486}
   m_PrefabAsset: {fileID: 0}
+--- !u!223 &9156671877309452167 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+    type: 3}
+  m_PrefabInstance: {fileID: 5187702168329186486}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1390755369129448544 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6103115272450046166, guid: fd766c3965af34a4a9740d56f2aa0ff1,
@@ -1231,6 +1296,11 @@ PrefabInstance:
     - target: {fileID: 1946699286557366564, guid: 68d8150fc144a4246b29aaf508a766d7,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2291598677483749448, guid: 68d8150fc144a4246b29aaf508a766d7,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4314229057845811240, guid: 68d8150fc144a4246b29aaf508a766d7,
@@ -1392,6 +1462,12 @@ CanvasGroup:
     type: 3}
   m_PrefabInstance: {fileID: 6734577476554152062}
   m_PrefabAsset: {fileID: 0}
+--- !u!223 &4808545138076276790 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 2291598677483749448, guid: 68d8150fc144a4246b29aaf508a766d7,
+    type: 3}
+  m_PrefabInstance: {fileID: 6734577476554152062}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5682177882989247795 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1417824802059380045, guid: 68d8150fc144a4246b29aaf508a766d7,
@@ -1511,6 +1587,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 156c637190dea7142959473d216c91aa,
         type: 3}
+    - target: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5846453320515108868, guid: fd766c3965af34a4a9740d56f2aa0ff1,
         type: 3}
       propertyPath: m_Alpha
@@ -1667,9 +1753,9 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7034322230146812021}
   m_PrefabAsset: {fileID: 0}
---- !u!225 &3511726465135413361 stripped
-CanvasGroup:
-  m_CorrespondingSourceObject: {fileID: 5846453320515108868, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+--- !u!223 &6445651487184317252 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 4102043876303184689, guid: fd766c3965af34a4a9740d56f2aa0ff1,
     type: 3}
   m_PrefabInstance: {fileID: 7034322230146812021}
   m_PrefabAsset: {fileID: 0}
@@ -1709,6 +1795,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!225 &3511726465135413361 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 5846453320515108868, guid: fd766c3965af34a4a9740d56f2aa0ff1,
+    type: 3}
+  m_PrefabInstance: {fileID: 7034322230146812021}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5877765276452655827 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3462400238325521062, guid: fd766c3965af34a4a9740d56f2aa0ff1,

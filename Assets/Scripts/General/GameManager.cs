@@ -94,6 +94,10 @@ namespace MAG.Game.Core
             private set
             {
                 _score = value;
+
+                if(value > 0)
+                    OutputScoreIncrease(value);
+
                 OutputScore();
             }
         }
@@ -231,8 +235,10 @@ namespace MAG.Game.Core
             switch(newPhase)
             {
                 case GamePhase.View:
+                    ShowGame();
                     break;
                 case GamePhase.Select:
+                    ShowGame();
                     break;
                 case GamePhase.Shift:
                     ShowGame();
@@ -567,14 +573,13 @@ namespace MAG.Game.Core
 
         public void CallPause()
         {
-            uiManager.ChangeUIPanel("Pause");
+            uiManager.AddUIPanel("Pause");
             inputManager.SetInputActive(false);
         }
 
         private void CallUnpause()
         {
             inputManager.SetInputActive(true);
-            ShowGame();
         }
 
         #endregion
@@ -596,7 +601,7 @@ namespace MAG.Game.Core
 
         #endregion
 
-        #region UI Events
+        #region UI Out Events
 
         private void OutputScore()
         {
@@ -611,6 +616,11 @@ namespace MAG.Game.Core
             {
                 uiManager.RaiseTextOutput("Score", _score.ToString());
             }
+        }
+
+        private void OutputScoreIncrease(int scoreIncrease)
+        {
+            uiManager.RaiseTextOutput("ScoreIncrease", scoreIncrease.ToString());
         }
 
         private void OutputMoves()
