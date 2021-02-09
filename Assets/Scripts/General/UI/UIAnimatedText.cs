@@ -18,6 +18,7 @@ namespace MAG.General.UI
         public void UpdateText(string text)
         {
             textMeshProUGUI.text = text;
+            textMeshProUGUI.transform.rotation = Quaternion.identity;
             textMeshProUGUI.transform.localScale = Vector3.one;
             PlayTextUpdateAnimation();
         }
@@ -26,8 +27,9 @@ namespace MAG.General.UI
         {
             textMeshProUGUI.DOFade(1f, 0.25f);
             textMeshProUGUI.transform.DOShakeScale(0.5f, 1f);
-            textMeshProUGUI.transform.DOShakeRotation(0.5f);
+            textMeshProUGUI.transform.DOShakeRotation(0.5f, 10, 5, 0);
             textMeshProUGUI.DOFade(0f, 0.25f).SetDelay(1f);
+            textMeshProUGUI.transform.DOScale(1f, 0.25f).SetDelay(0.25f);
         }
     }
 }

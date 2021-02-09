@@ -15,4 +15,4 @@ MonoBehaviour:
   moves: 10
   winCondtion:
     condition: 0
-    value: 3000
+    value: 5500
