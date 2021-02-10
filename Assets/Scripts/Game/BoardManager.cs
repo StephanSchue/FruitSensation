@@ -157,6 +157,10 @@ namespace MAG.Game
                     previousAbove = tileIndex;
                 }
             }
+
+            // --- Check Playability ---
+            if(!CheckBoardPlayable())
+                RecreateBoard();
         }
 
         public void RecreateBoard()
@@ -291,7 +295,9 @@ namespace MAG.Game
             return true;
         }
 
-        // --- Swape Tile ---
+        #endregion
+
+        #region SawpTile
 
         private void SwapeTile(Vector2Int tile01, Vector2Int tile02, bool counting)
         {
@@ -319,6 +325,9 @@ namespace MAG.Game
             {
                 ValidateBoard();
                 effectiveMove = true;
+
+                if(!CheckBoardPlayable())
+                    RecreateBoard();
             }
             else if(lastSwaped)
             {
@@ -334,7 +343,9 @@ namespace MAG.Game
                 OnMoveFinished.Invoke(effectiveMove);
         }
 
-        // --- Neighbour Checks ---
+        #endregion
+
+        #region Neigbour Checks
 
         private List<Vector2Int> GetAdjacent(Vector2Int coordinate)
         {
@@ -386,7 +397,9 @@ namespace MAG.Game
             return GetAdjacent(originTile).Contains(newPositionTile);
         }
 
-        // --- Validate Board ---
+        #endregion
+
+        #region Validate Board
 
         private void ValidateBoard()
         {
@@ -402,16 +415,16 @@ namespace MAG.Game
                     if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
                     {
                         // --- Draw Line ---
-                        #if UNITY_EDITOR
-                        if(debug)
-                        {
-                            for(int i = 1; i < matchList.Count; i++)
-                            {
-                                Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
-                                    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
-                            }
-                        }
-                        #endif
+                        //#if UNITY_EDITOR
+                        //if(debug)
+                        //{
+                        //    for(int i = 1; i < matchList.Count; i++)
+                        //    {
+                        //        Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                        //            tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                        //    }
+                        //}
+                        //#endif
                         
                         // --- Clean Matches ---
                         for(int i = 0; i < matchList.Count; i++)
@@ -503,16 +516,16 @@ namespace MAG.Game
                     if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
                     {
                         // --- Draw Line ---
-                        #if UNITY_EDITOR
-                        if(debug)
-                        {
-                            for(int i = 1; i < matchList.Count; i++)
-                            {
-                                Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
-                                    tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
-                            }
-                        }
-                        #endif
+                        //#if UNITY_EDITOR
+                        //if(debug)
+                        //{
+                        //    for(int i = 1; i < matchList.Count; i++)
+                        //    {
+                        //        Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
+                        //            tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
+                        //    }
+                        //}
+                        //#endif
                         
                         // --- Clean Matches ---
                         for(int i = 0; i < matchList.Count; i++)
@@ -597,7 +610,61 @@ namespace MAG.Game
             return matchList.Count > 2;
         }
 
-        // --- Utils ---
+        #endregion
+
+        #region Check Board Playable
+
+        public bool CheckBoardPlayable()
+        {
+            int foundPlayable = 0;
+
+            for(int x = 0; x < tilesDimesions.x; x++) // -3
+            {
+                for(int y = 0; y < tilesDimesions.y; y++) // 3
+                {
+                    int id = tiles[x, y].id;
+                    Vector2Int coordiate = new Vector2Int(x, y);
+                    List<Vector2Int> neigbours = GetAdjacent(new Vector2Int(x, y));
+
+                    foreach(var neibour in neigbours)
+                    {
+                        foreach(var neibour2 in GetAdjacent(neibour))
+                        {
+                            if(CoordinateInBounds(neibour2) &&
+                                id == tiles[neibour2.x, neibour2.y].id)
+                            {
+                                Vector2Int direction = neibour2 - neibour;
+                                Vector2Int neibour3 = neibour2 + direction;
+
+                                if(CoordinateInBounds(neibour3) &&
+                                    id == tiles[neibour3.x, neibour3.y].id)
+                                {
+                                    ++foundPlayable;
+
+                                    Debug.DrawRay(tiles[coordiate.x, coordiate.y].Position, new Vector3(0f, 0.5f, 0f), Color.blue, 1f);
+                                    Debug.DrawLine(tiles[coordiate.x, coordiate.y].Position, tiles[neibour.x, neibour.y].Position, Color.yellow, 1f);
+                                    Debug.DrawLine(tiles[neibour.x, neibour.y].Position, tiles[neibour2.x, neibour2.y].Position, Color.yellow, 1f);
+                                    Debug.DrawLine(tiles[neibour2.x, neibour2.y].Position, tiles[neibour3.x, neibour3.y].Position, Color.yellow, 1f);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return foundPlayable > 0;
+        }
+
+        private bool CoordinateInBounds(Vector2Int coordiante)
+        {
+            return (coordiante.x > -1 && coordiante.x < tilesDimesions.x
+                            && coordiante.y > -1 && coordiante.y < tilesDimesions.y);
+        }
+
+        #endregion
+
+        #region Utils
+
         public Vector2 GetWorldBoardSize() => new Vector2(tileSize.x * tilesDimesions.x, tileSize.y * tilesDimesions.y);
 
         #endregion

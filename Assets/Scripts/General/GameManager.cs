@@ -534,10 +534,17 @@ namespace MAG.Game.Core
                 else if(gamePhase != GamePhase.Pause)
                     OnButtonPauseMenuClick();
             }
-            else if(Application.isEditor && Input.GetKeyDown(KeyCode.Return))
+
+            #if UNITY_EDITOR
+            if(Input.GetKeyDown(KeyCode.Return))
             {
                 CallRestart();
             }
+            else if(Input.GetKeyDown(KeyCode.Space))
+            {
+                boardManager.CheckBoardPlayable();
+            }
+            #endif
         }
 
         private void EndGame()
