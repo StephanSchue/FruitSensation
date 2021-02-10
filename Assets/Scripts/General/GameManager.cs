@@ -93,7 +93,7 @@ namespace MAG.Game.Core
 
             private set
             {
-                int increase = Mathf.Abs(_score - value);
+                int increase = value - _score;
                 _score = value;
 
                 if(increase > 0)
