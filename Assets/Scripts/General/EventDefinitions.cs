@@ -9,5 +9,6 @@ namespace MAG.General
     {
         [System.Serializable] public class StringEvent : UnityEvent<string> { }
         [System.Serializable] public class IntEvent : UnityEvent<int> { }
+        [System.Serializable] public class BoolEvent : UnityEvent<bool> { }
     }
 }

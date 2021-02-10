@@ -295,7 +295,6 @@ namespace MAG.Game.Core
         private void OnSwapTile()
         {
             //Debug.Log("OnSwapTile");
-            --RemainingMoves;
         }
 
         private void OnMatchTile(int tileCount)
@@ -310,6 +309,14 @@ namespace MAG.Game.Core
 
         private void OnNoMatchTile()
         {
+            
+        }
+
+        private void OnMoveFinished(bool matchFound)
+        {
+            if(matchFound)
+                --RemainingMoves;
+
             if(CheckMatchConditions(out MatchResult matchResult))
             {
                 if(matchResult == MatchResult.Loose)
@@ -492,6 +499,7 @@ namespace MAG.Game.Core
                     boardManager.OnMatch.AddListener(OnMatchTile);
                     boardManager.OnNoMatch.AddListener(OnNoMatchTile);
                     boardManager.OnRefill.AddListener(OnRefill);
+                    boardManager.OnMoveFinished.AddListener(OnMoveFinished);
                     boardManagerListenerSet = true;
                 }
                 
@@ -536,6 +544,7 @@ namespace MAG.Game.Core
         {
             Score = RemainingMoves = 0;
             resourceManager.UnloadScene(currentGameScene, EndGameComplete);
+            uiManager.HideAll();
         }
 
         private void EndGameComplete()

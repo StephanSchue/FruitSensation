@@ -44,6 +44,7 @@ namespace MAG.Game
         public IntEvent OnMatch { get; private set; }
         public UnityEvent OnNoMatch { get; private set; }
         public UnityEvent OnRefill { get; private set; }
+        public BoolEvent OnMoveFinished { get; private set; }
 
         // --- Properties ---
         public Transform boardOrigin { get; private set; }
@@ -67,6 +68,7 @@ namespace MAG.Game
             OnMatch = new IntEvent();
             OnNoMatch = new UnityEvent();
             OnRefill = new UnityEvent();
+            OnMoveFinished = new BoolEvent();
         }
 
         #endregion
@@ -237,7 +239,7 @@ namespace MAG.Game
                     if(IsAdjacentNeighbour(lastSelected, coordinate))
                     {
                         // -- Swape Tile --
-                        SwapeTile(coordinate, lastSelected);
+                        SwapeTile(coordinate, lastSelected, true);
                         lastSwapePair = new Vector2Int[] { coordinate, lastSelected };
                         lastSwaped = true;
 
@@ -291,7 +293,7 @@ namespace MAG.Game
 
         // --- Swape Tile ---
 
-        private void SwapeTile(Vector2Int tile01, Vector2Int tile02)
+        private void SwapeTile(Vector2Int tile01, Vector2Int tile02, bool counting)
         {
             BoardTile boardTile01 = tiles[tile01.x, tile01.y];
             BoardTile boardTile02 = tiles[tile02.x, tile02.y];
@@ -303,22 +305,33 @@ namespace MAG.Game
             Vector3 boardTile02Pos = boardTile02.Position;
             
             boardTile02.SetPosition(boardTile01Pos);
-            boardTile01.SetPosition(boardTile02Pos, () => OnSwapeTileComplete(tile02));
+            boardTile01.SetPosition(boardTile02Pos, () => OnSwapeTileComplete(tile02, counting));
         }
 
-        private void OnSwapeTileComplete(Vector2Int checkCoordinate)
+        private void OnSwapeTileComplete(Vector2Int checkCoordinate, bool counting)
         {
+            if(!counting)
+                return;
+
+            bool effectiveMove = false;
+
             if(ValidateBoardSimulation() > 0)
             {
                 ValidateBoard();
+                effectiveMove = true;
             }
             else if(lastSwaped)
             {
                 lastSwaped = false;
 
                 if(expicitMatchs)
-                    SwapeTile(lastSwapePair[0], lastSwapePair[1]); // Swape Back
+                    SwapeTile(lastSwapePair[0], lastSwapePair[1], false); // Swape Back
+                else
+                    effectiveMove = true;
             }
+
+            if(OnMoveFinished != null)
+                OnMoveFinished.Invoke(effectiveMove);
         }
 
         // --- Neighbour Checks ---
