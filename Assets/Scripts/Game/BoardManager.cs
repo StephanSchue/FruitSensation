@@ -641,10 +641,12 @@ namespace MAG.Game
                                 {
                                     ++foundPlayable;
 
+                                    #if UNITY_EDITOR
                                     Debug.DrawRay(tiles[coordiate.x, coordiate.y].Position, new Vector3(0f, 0.5f, 0f), Color.blue, 1f);
                                     Debug.DrawLine(tiles[coordiate.x, coordiate.y].Position, tiles[neibour.x, neibour.y].Position, Color.yellow, 1f);
                                     Debug.DrawLine(tiles[neibour.x, neibour.y].Position, tiles[neibour2.x, neibour2.y].Position, Color.yellow, 1f);
                                     Debug.DrawLine(tiles[neibour2.x, neibour2.y].Position, tiles[neibour3.x, neibour3.y].Position, Color.yellow, 1f);
+                                    #endif
                                 }
                             }
                         }
