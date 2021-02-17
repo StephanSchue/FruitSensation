@@ -12,5 +12,6 @@ namespace MAG.Game.Tweening
         public TweenBaseSettingsElement moveTweenSettings;
         public TweenColorSettingsElement selectTweenSettings;
         public TweenColorSettingsElement deselectTweenSettings;
+        public TweenBaseSettingsElement despawnTweenSettings;
     }
 }

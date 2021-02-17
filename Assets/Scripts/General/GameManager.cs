@@ -301,6 +301,7 @@ namespace MAG.General
 
         private void OnMatchTile(int tileCount)
         {
+            // Calculate Combo
             int diff = (tileCount - 3);
 
             if(tileCount > 3)

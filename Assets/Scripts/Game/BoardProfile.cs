@@ -10,5 +10,9 @@ namespace MAG.Game
         public Vector2Int size = new Vector2Int(5,5);
         public TilePackProfile tilePack;
         public MatchConditionsProfile matchConditions;
+
+        [Header("Tweening")]
+        public float matchTileDelay = 0.25f;
+        public float refillRowDelay = 0.25f;
     }
 }

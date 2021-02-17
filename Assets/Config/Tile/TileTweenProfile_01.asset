@@ -26,3 +26,7 @@ MonoBehaviour:
     color: {r: 0.09803922, g: 0.13333334, b: 0.6509804, a: 0.39215687}
     duration: 0.25
     delay: 0
+  despawnTweenSettings:
+    easeType: 7
+    duration: 0.25
+    delay: 0

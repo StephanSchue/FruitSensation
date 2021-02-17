@@ -37,8 +37,7 @@ namespace MAG.Game
         public Vector3 Position => transform.position; 
 
         #endregion
-
-
+        
         private void Awake()
         {
             baseColor = overlayRenderer.color;
@@ -93,7 +92,28 @@ namespace MAG.Game
         {
             moveCallback?.Invoke();
             moveCallback = null;
-        } 
+        }
+
+        #endregion
+
+        #region Despawn
+
+        public float Despawn()
+        {
+            DOTween.Kill(transform);
+            float duration = tweeningProfile.despawnTweenSettings.duration;
+            float delay = tweeningProfile.despawnTweenSettings.delay;
+            var easeType = tweeningProfile.despawnTweenSettings.easeType;
+
+            transform.DOScale(0f, duration).SetDelay(delay).SetEase(easeType).OnComplete(DespawnDone);
+
+            return duration + delay;
+        }
+
+        private void DespawnDone()
+        {
+            Destroy(gameObject);
+        }
 
         #endregion
     }

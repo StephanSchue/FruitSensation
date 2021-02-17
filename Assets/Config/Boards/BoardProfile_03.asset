@@ -15,3 +15,5 @@ MonoBehaviour:
   size: {x: 6, y: 9}
   tilePack: {fileID: 11400000, guid: d9dc84f402b94d34b93d3979aeeac7fc, type: 2}
   matchConditions: {fileID: 11400000, guid: e966fc2fbc6a46d4ebe4232ffe3a162b, type: 2}
+  matchTileDelay: 0.25
+  refillRowDelay: 0.05

@@ -37,6 +37,9 @@ namespace MAG.Game
         private Vector2Int lastSelected = INVALID_COORDINATE;
         private Vector2 tileSize = new Vector2(1f, 1f);
 
+        private float tweenMatchTileDelay = 0.25f;
+        private float tweenRefillRowDelay = 0.25f;
+
         // --- Events ---
         public UnityEvent OnSelectTile { get; private set; }
         public UnityEvent OnDeselectTile { get; private set; }
@@ -103,6 +106,9 @@ namespace MAG.Game
             int[] previousLeft = new int[profile.size.y];
             int previousAbove = -1;
             previousLeftAbove = new int[profile.size.y];
+
+            tweenMatchTileDelay = profile.matchTileDelay;
+            tweenRefillRowDelay = profile.refillRowDelay;
 
             // --- Board Loop ---
             for(int x = 0; x < profile.size.x; x++)
@@ -323,11 +329,16 @@ namespace MAG.Game
 
             if(ValidateBoardSimulation() > 0)
             {
-                ValidateBoard();
-                effectiveMove = true;
+                StartCoroutine(ValidateBoard(() =>
+                {
+                    effectiveMove = true;
 
-                if(!CheckBoardPlayable())
-                    RecreateBoard();
+                    if(!CheckBoardPlayable())
+                        RecreateBoard();
+
+                    if(OnMoveFinished != null)
+                        OnMoveFinished.Invoke(effectiveMove);
+                }));
             }
             else if(lastSwaped)
             {
@@ -337,10 +348,10 @@ namespace MAG.Game
                     SwapeTile(lastSwapePair[0], lastSwapePair[1], false); // Swape Back
                 else
                     effectiveMove = true;
-            }
 
-            if(OnMoveFinished != null)
-                OnMoveFinished.Invoke(effectiveMove);
+                if(OnMoveFinished != null)
+                    OnMoveFinished.Invoke(effectiveMove);
+            }
         }
 
         #endregion
@@ -401,7 +412,7 @@ namespace MAG.Game
 
         #region Validate Board
 
-        private void ValidateBoard()
+        private IEnumerator ValidateBoard(UnityAction callback)
         {
             // Check for Matches
             int removedTileCount = 0;
@@ -414,24 +425,12 @@ namespace MAG.Game
 
                     if(ValidateMatch(coordinate, out List<Vector2Int> matchList))
                     {
-                        // --- Draw Line ---
-                        //#if UNITY_EDITOR
-                        //if(debug)
-                        //{
-                        //    for(int i = 1; i < matchList.Count; i++)
-                        //    {
-                        //        Debug.DrawLine(tiles[matchList[i - 1].x, matchList[i - 1].y].Position,
-                        //            tiles[matchList[i].x, matchList[i].y].Position, Color.yellow, 5f);
-                        //    }
-                        //}
-                        //#endif
-                        
+                        float duration = 0f;
+
                         // --- Clean Matches ---
                         for(int i = 0; i < matchList.Count; i++)
                         {
-                            tiles[matchList[i].x, matchList[i].y].gameObject.SetActive(false);
-                            DG.Tweening.DOTween.Kill(tiles[matchList[i].x, matchList[i].y].transform);
-                            Destroy(tiles[matchList[i].x, matchList[i].y].gameObject);
+                            duration = tiles[matchList[i].x, matchList[i].y].Despawn();
                             tiles[matchList[i].x, matchList[i].y] = null;
                             ++removedTileCount;
                         }
@@ -439,6 +438,9 @@ namespace MAG.Game
                         // Event
                         if(OnMatch != null)
                             OnMatch.Invoke(matchList.Count);
+
+                        if(removedTileCount > 0)
+                            yield return new WaitForSeconds(tweenMatchTileDelay);
                     }
                 }
             }
@@ -487,6 +489,8 @@ namespace MAG.Game
                             }
                         }
                     }
+
+                    yield return new WaitForSeconds(tweenRefillRowDelay);
                 }
 
                 // Event
@@ -494,12 +498,14 @@ namespace MAG.Game
                     OnRefill.Invoke();
 
                 // --- Revalidate Board ---
-                ValidateBoard();
+                StartCoroutine(ValidateBoard(callback));
             }
             else
             {
                 if(OnNoMatch != null)
                     OnNoMatch.Invoke();
+
+                callback?.Invoke();
             }
         }
 
