@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using TMPro;
 using static MAG.General.EventDefinitions;
 
-namespace MAG.General
+namespace MAG.General.UI
 {
     public class UIManager : MonoBehaviour
     {

@@ -675,8 +675,33 @@ namespace MAG.Game
 
         #if UNITY_EDITOR
 
+        SceneSettings sceneSettings = null;
+
         private void OnDrawGizmos()
         {
+            if(!Application.isPlaying)
+            {
+                if(sceneSettings == null)
+                {
+                    sceneSettings = GameObject.FindGameObjectWithTag("SceneSettings")?.
+                    GetComponent<SceneSettings>();
+                }
+                
+                if(sceneSettings != null)
+                {
+                    boardProfile = sceneSettings.boardProfile;
+
+                    if(boardProfile == null || boardProfile.tilePack == null)
+                        return;
+
+                    Vector2Int tilesDimesions = sceneSettings.boardProfile.size;
+                    Vector2 tileSize = sceneSettings.boardProfile.tilePack.boardTiles[0].size;
+
+                    boardOriginPosition = sceneSettings.boardOrigin.position +
+                        new Vector3(-tilesDimesions.x * (tileSize.x * 0.5f), tilesDimesions.y * (tileSize.y * 0.5f), 0f);
+                }
+            }
+
             if(boardProfile == null)
                 return;
             

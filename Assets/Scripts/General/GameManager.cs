@@ -1,11 +1,13 @@
-﻿using MAG.General;
+﻿using MAG.Game;
+using MAG.General;
+using MAG.General.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace MAG.Game.Core
+namespace MAG.General
 {
     /// <summary>
     /// GameManager - 

@@ -1,22 +1,39 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using DG.Tweening;
+using UnityEngine.UI;
+using MAG.General.Tweening;
 
 namespace MAG.General.UI
 {
-    public class UIAnimatedText : MonoBehaviour
+    public sealed class UIAnimatedText : UITweenSequeneComponent
     {
-        public TextMeshProUGUI textMeshProUGUI;
+        #region Components/Settings/Variables
 
+        // --- Components/Settings ---
+        [Header("Text Target")]
+        public TextMeshProUGUI textMeshProUGUI;
+        public bool cleanTextOnStartup = true;
+
+        // --- Variables ---
         private Queue<string> queue = new Queue<string>();
         private bool fading = false;
 
-        private void Reset()
+        #endregion
+
+        protected override void Reset()
         {
+            base.Reset();
             textMeshProUGUI = GetComponent<TextMeshProUGUI>();
         }
+
+        private void Awake()
+        {
+            if(cleanTextOnStartup)
+                textMeshProUGUI.text = string.Empty;
+        }
+
+        #region Text Update
 
         public void UpdateText(string text)
         {
@@ -32,16 +49,8 @@ namespace MAG.General.UI
             textMeshProUGUI.text = text;
             textMeshProUGUI.transform.rotation = Quaternion.identity;
             textMeshProUGUI.transform.localScale = Vector3.one;
-            PlayTextUpdateAnimation();
-        }
 
-        private void PlayTextUpdateAnimation()
-        {
-            textMeshProUGUI.DOFade(1f, 0.25f);
-            textMeshProUGUI.transform.DOShakeScale(0.5f, 1f);
-            textMeshProUGUI.transform.DOShakeRotation(0.5f, 10, 5, 0);
-            textMeshProUGUI.DOFade(0f, 0.25f).SetDelay(1f);
-            textMeshProUGUI.transform.DOScale(1f, 0.25f).SetDelay(0.25f).OnComplete(OnTextUpdateAnimationDone);
+            PlayTweenSequence(OnTextUpdateAnimationDone);
         }
 
         private void OnTextUpdateAnimationDone()
@@ -50,6 +59,8 @@ namespace MAG.General.UI
 
             if(queue.Count > 1)
                 SetText(queue.Dequeue());
-        }
+        }  
+
+        #endregion
     }
 }

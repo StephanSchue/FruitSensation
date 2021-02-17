@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dcc4b4e922e11c4991e70c747810685, type: 3}
+  m_Name: TileTweenProfile_01
+  m_EditorClassIdentifier: 
+  moveTweenSettings:
+    easeType: 0
+    duration: 0.25
+    delay: 0
+  selectTweenSettings:
+    easeType: 0
+    color: {r: 1, g: 1, b: 0, a: 0.5019608}
+    duration: 0.25
+    delay: 0
+  deselectTweenSettings:
+    easeType: 0
+    color: {r: 0.09803922, g: 0.13333334, b: 0.6509804, a: 0.39215687}
+    duration: 0.25
+    delay: 0

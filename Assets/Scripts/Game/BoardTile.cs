@@ -4,25 +4,40 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
 using DG.Tweening;
+using MAG.Game.Tweening;
 
 namespace MAG.Game
 {
     public class BoardTile : MonoBehaviour
     {
-		public int id;
+        #region Settings/Variables
+
+        [Header("Settings")]
+        public int id;
         public Vector2 size;
-		public SpriteRenderer overlayRenderer;
 
+        [Header("Components")]
+        public SpriteRenderer overlayRenderer;
+
+        [Header("Tweening")]
+        public TileTweeningProfile tweeningProfile;
+
+        // --- Variables ---
         private Color baseColor;
-		private float duration = 0.25f;
 
-		private bool selected = false;
-		private bool moving = false;
+        private bool selected = false;
+        private bool moving = false;
 
-		private UnityAction moveCallback;
-		public bool IsMoving => moving;
+        // --- Events ---
+        private UnityAction moveCallback;
 
-		public Vector3 Position => transform.position;
+        // --- Properties ---
+        public bool IsMoving => moving;
+
+        public Vector3 Position => transform.position; 
+
+        #endregion
+
 
         private void Awake()
         {
@@ -34,13 +49,27 @@ namespace MAG.Game
         public void Select()
         {
             selected = true;
-            overlayRenderer.color = new Color(1f, 1f, 0f, 0.5f);
+
+            float duration = tweeningProfile.selectTweenSettings.duration;
+            float delay = tweeningProfile.selectTweenSettings.delay;
+            var easeType = tweeningProfile.selectTweenSettings.easeType;
+            var color = tweeningProfile.selectTweenSettings.color;
+
+            overlayRenderer.DOColor(color, duration).
+                SetDelay(delay).SetEase(easeType);
         }
 
         public void Deselect()
         {
             selected = false;
-            overlayRenderer.color = baseColor;
+
+            float duration = tweeningProfile.deselectTweenSettings.duration;
+            float delay = tweeningProfile.deselectTweenSettings.delay;
+            var easeType = tweeningProfile.deselectTweenSettings.easeType;
+            var color = tweeningProfile.deselectTweenSettings.color;
+
+            overlayRenderer.DOColor(color, duration).
+                SetDelay(delay).SetEase(easeType);
         }
         
         #endregion
@@ -50,16 +79,20 @@ namespace MAG.Game
         public void SetPosition(Vector3 position, UnityAction callback = null)
         {
             moveCallback = callback;
-            transform.DOMove(position, duration).OnComplete(SetPositionDone);
+
+            float duration = tweeningProfile.moveTweenSettings.duration;
+            float delay = tweeningProfile.moveTweenSettings.delay;
+            var easeType = tweeningProfile.moveTweenSettings.easeType;
+
+            transform.DOMove(position, duration).
+                SetDelay(delay).SetEase(easeType).
+                OnComplete(SetPositionDone);
         }
 
         private void SetPositionDone()
         {
-            if(moveCallback != null)
-            {
-                moveCallback.Invoke();
-                moveCallback = null;
-            }
+            moveCallback?.Invoke();
+            moveCallback = null;
         } 
 
         #endregion

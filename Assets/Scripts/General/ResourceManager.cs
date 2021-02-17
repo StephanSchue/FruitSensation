@@ -87,11 +87,8 @@ namespace MAG.General
             DeinitializePreload();
 
             // --- Events ---
-            if(preloadCallback != null)
-                preloadCallback.Invoke();
-
-            if(onPreloadEnd != null)
-                onPreloadEnd.Invoke();
+            preloadCallback?.Invoke();
+            onPreloadEnd?.Invoke();
         }
 
         #endregion
@@ -131,8 +128,7 @@ namespace MAG.General
                     break;
             }
 
-            if(callback != null)
-                callback.Invoke();
+            callback?.Invoke();
         }
 
         public void UnloadScene(AssetReference sceneReference, UnityAction callback)
@@ -153,8 +149,7 @@ namespace MAG.General
                     break;
             }
 
-            if(callback != null)
-                callback.Invoke();
+            callback?.Invoke();
         }
 
         #endregion
