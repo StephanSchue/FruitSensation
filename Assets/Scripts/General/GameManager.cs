@@ -517,6 +517,7 @@ namespace MAG.General
 
             Score = 0;
             RemainingMoves = totalMoves = matchConditionsProfile.moves;
+            ChangeGamePhase(GamePhase.View);
 
             boardManager.CreateBoard();
 
