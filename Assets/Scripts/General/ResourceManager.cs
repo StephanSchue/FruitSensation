@@ -12,6 +12,7 @@ namespace MAG.General
     public class ResourceManager : MonoBehaviour
     {
         public AssetLabelReference preloader;
+        public Camera preloadCamera;
 
         // --- Preload Variables ---
         private GameObject preloadContainer;
@@ -85,6 +86,9 @@ namespace MAG.General
 
             // --- Remove Preloader Canvas ---
             DeinitializePreload();
+
+            if(preloadCamera != null)
+                preloadCamera.enabled = false;
 
             // --- Events ---
             preloadCallback?.Invoke();
