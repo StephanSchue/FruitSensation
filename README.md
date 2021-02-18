@@ -31,6 +31,7 @@ The invested time is within the constrained 1 week work duration.
 The app is intented to be played in portait-mode, so setup your game view with a portait-view like 9:16, 10:19, 3:2, 3:4 or simular. The camera adjust to the view in playmode.
 
 The build starts via the 'Assets/Scenes/Preloader.unity' scene.
+
 You can also start the specific level 'Assets/Scenes/Level01-03.unity' directly.
 
 ## Ready to Play Version
